@@ -265,11 +265,11 @@ static void init() {
   glGenTextures(2, texName);
   Image* image;
 
-  image = loadBMP("snake.bmp");
-  loadTexture(image, 0);
-
-  image = loadBMP("apple.bmp");
-  loadTexture(image, 1);
+//  image = loadBMP("snake.bmp");
+//  loadTexture(image, 0);
+//
+//  image = loadBMP("apple.bmp");
+//  loadTexture(image, 1);
 
   delete image;
 }
@@ -348,78 +348,13 @@ void drawSplashScreen() {
 
   std::stringstream ss; // Helper para desplegar el marcador
 
-  ss << "Snake 3D version 4.22 (64-bit)";
+  ss << "Snake 3D version 1.00";
   drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 1.08);
   ss.str("");
   ss.clear();
 
-  ss << "Copyright (C) 2004 Javier Gerardo Trevino Saldana";
+  ss << "Copyright (C) 2014 Tupicho";
   drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 1.0);
-  ss.str("");
-  ss.clear();
-
-  ss << "Licensed under the GNU General Public License version 2 only";
-  drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.92);
-  ss.str("");
-  ss.clear();
-
-  ss << "Mac OS X 10.8.3 (12C60) running in multiuser mode";
-  drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.76);
-  ss.str("");
-  ss.clear();
-
-  ss << "Memory Page Size: 4096";
-  drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.68);
-  ss.str("");
-  ss.clear();
-
-  ss << "System has 8 Intel core(s) with SSE";
-  drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.60);
-  ss.str("");
-  ss.clear();
-
-  ss << "Running 2 test sequences... (CTRL-C to quit)";
-  drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.44);
-  ss.str("");
-  ss.clear();
-
-  ss << "Running tests on full 12899MB region...";
-  drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.28);
-  ss.str("");
-  ss.clear();
-
-  ss << "  Trabajo Final entregado                      : ok";
-  drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.20);
-  ss.str("");
-  ss.clear();
-
-  ss << "  Materia de Graficas Computacionales aprobada : ok";
-  drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.12);
-  ss.str("");
-  ss.clear();
-
-  ss << "Starting game...";
-  drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, -0.04);
-  ss.str("");
-  ss.clear();
-
-  ss << "  Loading Classes                              : ok";
-  drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, -0.12);
-  ss.str("");
-  ss.clear();
-
-  ss << "  Applying Textures                            : ok";
-  drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, -0.20);
-  ss.str("");
-  ss.clear();
-
-  ss << "  Turning Lights on                            : ok";
-  drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, -0.28);
-  ss.str("");
-  ss.clear();
-
-  ss << "Game Loading Complete...";
-  drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, -0.44);
   ss.str("");
   ss.clear();
 
@@ -786,7 +721,7 @@ int main(int argc, char *argv[]) {
   glutInitWindowSize(width, height);
   glutInitWindowPosition(120, 120);
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-  glutCreateWindow("Snake 3D - ITC 2013");
+  glutCreateWindow("Snake 3D - Amarilla/Villalba");
 
   init();
 
