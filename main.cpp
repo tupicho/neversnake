@@ -231,13 +231,11 @@ void initMenu(void) {
 
 
 /*
- *
  * public: init()
  *
  * Inicialización de:
  *  - Modos de openGL
  *  - Estado del juego
- *
  */
 static void init() {
   glClearColor(0.0, 0.0, 0.0, 0.0);
