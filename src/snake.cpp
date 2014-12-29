@@ -1,4 +1,4 @@
-#include "snake.h"
+#include "../cabeceras/snake.h"
 
 Snake::Snake(int x, int y, int maxLength) : initX(x), initY(y) {
   this->maxLength = maxLength + minLength;

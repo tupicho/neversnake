@@ -3,7 +3,7 @@ project(neversnake)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-set(SOURCE_FILES main.cpp image.cpp snake.cpp snake.h image.h snake.bmp apple.bmp)
+set(SOURCE_FILES src/main.cpp src/image.cpp src/snake.cpp cabeceras/snake.h cabeceras/image.h texturas/snake.bmp texturas/apple.bmp)
 add_executable(neversnake ${SOURCE_FILES})
 
 find_package(OpenGL REQUIRED)

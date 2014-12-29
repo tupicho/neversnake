@@ -14,8 +14,8 @@
 #include <time.h>
 #include <string.h>
 
-#include "image.h"
-#include "snake.h"
+#include "../cabeceras/image.h"
+#include "../cabeceras/snake.h"
 
 Snake* player;
 

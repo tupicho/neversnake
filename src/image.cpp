@@ -1,7 +1,7 @@
 #include <fstream>
 #include <assert.h>
 
-#include "image.h"
+#include "../cabeceras/image.h"
 
 Image::Image(char* ps, int w, int h) : pixels(ps), width(w), height(h) {}
 
