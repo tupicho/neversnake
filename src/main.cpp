@@ -20,7 +20,7 @@
 Snake* player;
 
 /*
-   Ventana
+   Windows
 ******************************/
 
 // Límites del viewport
