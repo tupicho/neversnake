@@ -249,7 +249,7 @@ static void init() {
             100);            // maximum length of tail
 
     // Random seed
-    srand((int) time(NULL));
+    srand((unsigned int) time(NULL));
 
     // Genera la Manzana por primera vez
     appleX = rand() % unitsPerRow + 1;
@@ -569,7 +569,7 @@ static void display(void) {
 }
 
 // Regresa verdadero si la serpiente colisiona con un par de puntos
-bool snakeHits(float x, float y) {
+bool snakeHits(float x, float y) { //todo falta que avise cuando choca por la pared
     double nextX, nextY;
 
     nextX = player->x();
@@ -580,15 +580,14 @@ bool snakeHits(float x, float y) {
 
 void resetGame() {
     player->reset();
-    dirX = 1;
-    dirY = 0;
+    score = 0;
 }
 
 void myTimer(int valor) {
 //    int nextX, nextY;
 
     if (showSplashScreen) {
-        glutTimerFunc(timerTick / speed, myTimer, 1);
+        glutTimerFunc((unsigned int) (timerTick / speed), myTimer, 1);
         return;
     }
 
