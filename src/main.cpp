@@ -1,20 +1,20 @@
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
-
 #include <GL/glut.h>
-
 #endif
 
 #include <iostream>
-#include <sstream>
 
+#include <sstream>
 #include <string.h>
 
 #include "../cabeceras/image.h"
-#include "../cabeceras/snake.h"
 
+#include "../cabeceras/snake.h"
 Snake *player;
+
+using namespace std;
 
 /*
    Windows
@@ -73,6 +73,10 @@ bool showMap = false;
 // Flag para tipo de serpiente
 int snakeShape = 0;
 
+// Flag para manzana
+int appleFlag = 0;
+int specialApple = 0;
+
 // Guarda nombre de la textura
 static GLuint texName[36];
 
@@ -90,6 +94,7 @@ bool showSplashScreen = true;
 
 // Posición
 int appleX, appleY;
+int specX, specY;
 
 // Angulo de rotación
 int appleAngle = 0;
@@ -426,6 +431,24 @@ static void drawMap(void) {
 //  drawString(GLUT_BITMAP_9_BY_15, ss.str().c_str(), -0.85, -0.85);
 }
 
+void drawApple(GLfloat red, GLfloat green, GLfloat blue) {
+    glColor3f(red, green, blue);
+
+    glEnable(GL_TEXTURE_GEN_S);
+    glEnable(GL_TEXTURE_GEN_T);
+
+    glBindTexture(GL_TEXTURE_2D, texName[1]);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+    glPushMatrix();
+    glTranslated(xPos2d(appleX), yPos2d(appleY), 0.025);
+    glRotated(appleAngle, 0.3, 1.0, 0.0);
+    glutSolidCube(0.05);
+    glPopMatrix();
+}
+
 static void drawPerspective(void) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
@@ -486,24 +509,10 @@ static void drawPerspective(void) {
     glEnable(GL_TEXTURE_2D);
 
     // Dibuja la Manzana
-    glColor3f(1.5, 0.0, 0.0);
+    drawApple(1.0, 1.0, 1.0);
 
-    glEnable(GL_TEXTURE_GEN_S);
-    glEnable(GL_TEXTURE_GEN_T);
-
-    glBindTexture(GL_TEXTURE_2D, texName[1]);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-
-    glPushMatrix();
-    glTranslated(xPos2d(appleX), yPos2d(appleY), 0.025);
-    glRotated(appleAngle, 0.3, 1.0, 0.0);
-    glutSolidCube(0.05);
-    glPopMatrix();
-
-    // Dibuja la Serpiente
-    glColor3f(0.8, 1.0, 0.0);
+    // Dibuja la Serpientedr
+    glColor3f(1.0, 1.0, 1.0);
 
     glBindTexture(GL_TEXTURE_2D, texName[0]);
 
@@ -515,8 +524,8 @@ static void drawPerspective(void) {
         glPopMatrix();
     }
 
-//    glDisable(GL_TEXTURE_GEN_S);
-//    glDisable(GL_TEXTURE_GEN_T);
+    glDisable(GL_TEXTURE_GEN_S);
+    glDisable(GL_TEXTURE_GEN_T);
     glDisable(GL_TEXTURE_2D);
 
     // Dibuja el Marcador
@@ -568,8 +577,50 @@ static void display(void) {
     glutSwapBuffers();
 }
 
+void generateApple(int appleValue){
+    switch (appleValue){
+        case 1: //blanco
+            drawApple(1.0, 1.0, 1.0);
+            break;
+        case 2: //azul
+            drawApple(0, 0, 1.0);
+            break;
+        case 3: //rojo
+            drawApple(1.0, 0, 0);
+            break;
+        case 4: //amarillo
+            drawApple(1.0, 1.0, 0);
+            break;
+        case 5: //verde
+            drawApple(0, 1.0, 0);
+            break;
+        default: //no genera nada
+            break;
+    }
+
+}
+
+int specialAppleValue(){
+    //aca debería calcular la posibilidad de que salga cada manzana
+//        appleFlag = 1;
+    int probApple = (rand() % 300) + 1;
+    if (probApple <= 50){
+        return 1; //blanco
+    } else if (probApple <= 70){
+        return 2; //azul
+    } else if (probApple <= 85){
+        return 3; //rojo
+    } else if (probApple <= 145){
+        return 4; //amarillo
+    } else if (probApple <= 155){
+        return 5; //verde
+    } else{
+        return 0; //nada
+    }
+}
+
 // Regresa verdadero si la serpiente colisiona con un par de puntos
-bool snakeHits(float x, float y) { //todo falta que avise cuando choca por la pared
+bool snakeHits(float x, float y) {
     double nextX, nextY;
 
     nextX = player->x();
@@ -593,16 +644,11 @@ void myTimer(int valor) {
 
     // Revisa si la Serpiente colisiona con el marco
     // y cambia la dirección cuando sea necesario
-    if (dirX == 1 && player->x() >= unitsPerRow) {
-        //aca deberia reiniciar
+    if ((dirX == 1 && player->x() >= unitsPerRow) ||
+            (dirX == -1 && player->x() <= 0) ||
+            (dirY == 1 && player->y() >= unitsPerCol) ||
+            (dirY == -1 && player->y() <= 0) )
         resetGame();
-    } else if (dirX == -1 && player->x() <= 0) {
-        resetGame();
-    } else if (dirY == 1 && player->y() >= unitsPerCol) {
-        resetGame();
-    } else if (dirY == -1 && player->y() <= 0) {
-        resetGame();
-    }
 
 //    nextX = player->x() + dirX;
 //    nextY = player->y() + dirY;
@@ -610,10 +656,20 @@ void myTimer(int valor) {
     appleAngle = (appleAngle >= 360) ? 0 : appleAngle + 5;
 
     // Crece la cola primero para que el jugador tenga mejor control
-    if (crece == 1 || snakeHits(appleX, appleY)) {
-
+    if (crece == 1 || snakeHits(appleX, appleY) || snakeHits(specX, specY)) {
+        if(appleFlag == 0){
+            appleFlag = 1;
+            specX = rand() % unitsPerRow + 1;
+            specY = rand() % unitsPerCol + 1;
+            specialApple = specialAppleValue();
+            generateApple(specialApple);
+        }
         // Incrementa el score
-        score += (1 * scoreMultiplier * speed);
+        if(snakeHits(specX, specY)){
+            appleFlag = 0;
+            score += (1 * scoreMultiplier); //scoreMultiplier que sea funcion
+        }
+
 
         if (!player->full()) {
             player->eat();
@@ -682,27 +738,27 @@ void myKeyboard(unsigned char theKey, int mouseX, int mouseY) {
             }
             break;
 
-            // Crece el tamaño de la serpiente
-        case 'c':
-        case 'C':
-            crece = 1;
-            break;
-
-            // Esconde/despliega el mapa
-        case 'm':
-        case 'M':
-            showMap = !showMap;
-            break;
-
-            // Aumenta la velocidad
-        case 'v':
-            speed *= 1.1;
-            break;
-
-            // Disminuye la velocidad
-        case 'V':
-            speed *= 0.9;
-            break;
+//            // Crece el tamaño de la serpiente
+//        case 'c':
+//        case 'C':
+//            crece = 1;
+//            break;
+//
+//            // Esconde/despliega el mapa
+//        case 'm':
+//        case 'M':
+//            showMap = !showMap;
+//            break;
+//
+//            // Aumenta la velocidad
+//        case 'v':
+//            speed *= 1.1;
+//            break;
+//
+//            // Disminuye la velocidad
+//        case 'V':
+//            speed *= 0.9;
+//            break;
 
         case 13:
             showSplashScreen = false;
@@ -710,8 +766,8 @@ void myKeyboard(unsigned char theKey, int mouseX, int mouseY) {
 
             // Salir
         case 27:
-        case 'e':
-        case 'E':
+//        case 'e':
+//        case 'E':
             exit(-1);
     }
 }
