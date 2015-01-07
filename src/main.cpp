@@ -595,6 +595,7 @@ void generateApple(int appleValue){
             drawApple(0, 1.0, 0);
             break;
         default: //no genera nada
+            drawApple(1, 1, 1); //prueba
             break;
     }
 
