@@ -1,0 +1,23 @@
+33  sudo apt-get install vim
+  325  sudo apt-get install glut
+  326  sudo apt-get install libglut
+  327  sudo apt-get install libglut*
+  328  sudo apt-get install freeglut3-dev
+  339  sudo apt-get install mesa-utils
+  342  sudo apt-get install libxmu-dev libxi-dev
+  355  sudo apt-get install libglut3 libglut3-dev
+  356  sudo apt-get install libxmu-dev libxi-dev
+
+
+  424  sudo apt-get install libstdc++
+  432  sudo apt-get install libpng12.so
+  433  sudo apt-get install libpng12
+  434  sudo apt-get install libpng12-0 libpng12-0:i386
+  436  sudo apt-get install libsm
+  437  sudo apt-get install libsm*
+  438  sudo apt-get install libsm-dev
+  441  sudo apt-get install libgtk2.0-0:i386 libxxf86vm1:i386 libsm6:i386 lib32stdc++6
+  443  sudo apt-get install libogre-1.9-dev
+  444  sudo apt-get install synaptic
+  449  sudo aptitude install dosfstools
+  450  sudo apt-get install dosfstools
