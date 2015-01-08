@@ -439,6 +439,7 @@ void drawApple(GLfloat red, GLfloat green, GLfloat blue) {
         glutSolidCube(0.05);
         glPopMatrix();
     }
+    glColor3f(1.0, 1.0, 1.0);
     glPushMatrix();
     glTranslated(xPos2d(appleX), yPos2d(appleY), 0.025);
     glRotated(appleAngle, 0.3, 1.0, 0.0);
