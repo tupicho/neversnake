@@ -257,8 +257,8 @@ static void init() {
     srand((unsigned int) time(NULL));
 
     // Genera la Manzana por primera vez
-    appleX = rand() % unitsPerRow + 1;
-    appleY = rand() % unitsPerCol + 1;
+    appleX = specX = rand() % unitsPerRow + 1;
+    appleY = specY = rand() % unitsPerCol + 1;
 
     // Crea menu
     initMenu();
@@ -270,8 +270,8 @@ static void init() {
     image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
     loadTexture(image, 0);
 
-    image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/apple.bmp");
-    loadTexture(image, 1);
+//    image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/apple.bmp");
+//    loadTexture(image, 1);
 
     delete image;
 }
@@ -433,19 +433,17 @@ static void drawMap(void) {
 
 void drawApple(GLfloat red, GLfloat green, GLfloat blue) {
     glColor3f(red, green, blue);
-
-    glEnable(GL_TEXTURE_GEN_S);
-    glEnable(GL_TEXTURE_GEN_T);
-
-    glBindTexture(GL_TEXTURE_2D, texName[1]);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-
+    if(appleFlag == 1) {
+        glPushMatrix();
+        glTranslated(xPos2d(specX), yPos2d(specY), 0.025);
+        glutSolidCube(0.05);
+        glPopMatrix();
+    }
     glPushMatrix();
     glTranslated(xPos2d(appleX), yPos2d(appleY), 0.025);
     glRotated(appleAngle, 0.3, 1.0, 0.0);
     glutSolidCube(0.05);
+//    glutSolidCube(0.05);
     glPopMatrix();
 }
 
@@ -509,6 +507,11 @@ static void drawPerspective(void) {
     glEnable(GL_TEXTURE_2D);
 
     // Dibuja la Manzana
+    glBindTexture(GL_TEXTURE_2D, texName[1]);
+    glEnable(GL_TEXTURE_GEN_S);
+    glEnable(GL_TEXTURE_GEN_T);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
     drawApple(1.0, 1.0, 1.0);
 
     // Dibuja la Serpientedr
@@ -595,6 +598,7 @@ void generateApple(int appleValue){
             drawApple(0, 1.0, 0);
             break;
         default: //no genera nada
+            appleFlag = 0;
             drawApple(1, 1, 1); //prueba
             break;
     }
@@ -658,38 +662,32 @@ void myTimer(int valor) {
 
     // Crece la cola primero para que el jugador tenga mejor control
     if (crece == 1 || snakeHits(appleX, appleY) || snakeHits(specX, specY)) {
-        if(appleFlag == 0){
-            appleFlag = 1;
-            specX = rand() % unitsPerRow + 1;
-            specY = rand() % unitsPerCol + 1;
-            specialApple = specialAppleValue();
-            generateApple(specialApple);
-        }
-        // Incrementa el score
-        if(snakeHits(specX, specY)){
-            appleFlag = 0;
-            score += (1 * scoreMultiplier); //scoreMultiplier que sea funcion
+        // Incrementa el score si choca con una manzana normal
+        if(snakeHits(appleX, appleY)){
+            appleX = rand() % unitsPerRow + 1;
+            appleY = rand() % unitsPerCol + 1;
+            score += 1;
         }
 
+        // Si choca contra una especial
+        if(snakeHits(specX, specY)){
+            appleFlag = 0;
+            specX = rand() % unitsPerRow + 3;
+            specY = rand() % unitsPerCol + 3;
+            score += 100; //scoreMultiplier que sea funcion
+        }
+
+        if(appleFlag == 0){
+            appleFlag = 1;
+            specialApple = specialAppleValue();
+//            generateApple(specialApple);
+        }
 
         if (!player->full()) {
             player->eat();
-        } else {
-
-            // o Gana y regresa a su posición, dirección y tamaño inicial
-            resetGame();
-
-            // Ahora cada manzana vale más
-            scoreMultiplier++;
-
-            // y se aumenta la velocidad de movimiento
-            timerTick *= timerMultiplier;
         }
 
-        appleX = rand() % unitsPerRow + 1;
-        appleY = rand() % unitsPerCol + 1;
-
-        crece = 0;
+        generateApple(specialApple);
     }
 
     if (!player->moveTo(dirX, dirY)) {
