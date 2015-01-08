@@ -40,7 +40,7 @@ double unitSize = 10;
 int unitsPerRow = width / unitSize;
 int unitsPerCol = height / unitSize;
 
-
+int red, green, blue = 0;
 /*
  Variables 2D
  ******************************/
@@ -257,8 +257,10 @@ static void init() {
     srand((unsigned int) time(NULL));
 
     // Genera la Manzana por primera vez
-    appleX = specX = rand() % unitsPerRow + 1;
-    appleY = specY = rand() % unitsPerCol + 1;
+    appleX = rand() % unitsPerRow + 1;
+    specX = rand() % unitsPerRow + 1;
+    appleY = rand() % unitsPerCol + 1;
+    specY = rand() % unitsPerCol + 1;
 
     // Crea menu
     initMenu();
@@ -367,83 +369,20 @@ void drawSplashScreen() {
 
 }
 
-static void drawMap(void) {
-//  glDisable(GL_LIGHTING);
-//  glDisable(GL_LIGHT0);
-//  glDisable(GL_DEPTH_TEST);
-//  glClear(GL_COLOR_BUFFER_BIT);
-
-    // Dibuja la Cuadrícula
-//  glColor3f(0.2, 0.0, 0.2);
-//  glLineWidth(1);
-
-//  glBegin(GL_LINES);
-//
-//  for(int i = 0; i <= unitsPerRow; i += 2) {
-//    glVertex2d(minX, xPos2d(i));
-//    glVertex2f(maxX, xPos2d(i));
-//    glVertex2d(xPos2d(i), minY);
-//    glVertex2f(xPos2d(i), maxY);
-//  }
-//
-//  glEnd();
-
-    // Dibuja el Marco
-//  glColor3f(0.6, 0.0, 0.6);
-//  glLineWidth(3);
-
-//  glBegin(GL_LINE_LOOP);
-//  glVertex2f(minX, minY);
-//  glVertex2f(minX, maxY);
-//  glVertex2f(maxX, maxY);
-//  glVertex2f(maxX, minY);
-//  glEnd();
-
-//  glLineWidth(1);
-
-    // Dibuja la Manzana
-//  glColor3f(1.0, 0.0, 0.0);
-//  glPointSize(6);
-//
-//  glBegin(GL_POINTS);
-//  glVertex2f(xPos2d(appleX), yPos2d(appleY));
-//  glEnd();
-//
-//  glPointSize(1);
-
-    // Dibuja la Serpiente
-//  glColor3f(1.0, 1.0, 0.0);
-//  glLineWidth(unitSize);
-//
-//  glBegin(GL_LINE_STRIP);
-//  for (int i = player->length - 1; i >= 0; i--) {
-//    glVertex2f(xPos2d(player->xAt(i)), yPos2d(player->yAt(i)));
-//  }
-//  glEnd();
-//
-//  glLineWidth(1);
-//
-    // Dibuja el Marcador
-//  glColor3f(1.0, 1.0, 1.0);
-//
-//  std::stringstream ss; // Helper para desplegar el marcador
-//  ss << "Score: " << std::to_string(score);
-//  drawString(GLUT_BITMAP_9_BY_15, ss.str().c_str(), -0.85, -0.85);
-}
-
-void drawApple(GLfloat red, GLfloat green, GLfloat blue) {
-    glColor3f(red, green, blue);
+void drawApple() {
     if(appleFlag == 1) {
+        glColor3f(red, green, blue);
         glPushMatrix();
         glTranslated(xPos2d(specX), yPos2d(specY), 0.025);
-        glutSolidCube(0.05);
+        glutSolidSphere(0.04, 10, 10);
+//        glutSolidCube(0.05);
         glPopMatrix();
     }
-    glColor3f(1.0, 1.0, 1.0);
+    glColor3f(0.5, 0.2, 0.7);
     glPushMatrix();
     glTranslated(xPos2d(appleX), yPos2d(appleY), 0.025);
     glRotated(appleAngle, 0.3, 1.0, 0.0);
-    glutSolidCube(0.05);
+    glutSolidSphere(0.04, 10, 10);
 //    glutSolidCube(0.05);
     glPopMatrix();
 }
@@ -479,7 +418,7 @@ static void drawPerspective(void) {
     glEnd();
 
     // Dibuja el Marco
-    glColor3f(0.6, 0.0, 0.6);
+    glColor3f(0, 0.2, 0);
 
     glPushMatrix();
     glTranslated(maxX + 0.05, 0.0, 0.0);
@@ -513,7 +452,7 @@ static void drawPerspective(void) {
     glEnable(GL_TEXTURE_GEN_T);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-    drawApple(1.0, 1.0, 1.0);
+    drawApple();
 
     // Dibuja la Serpientedr
     glColor3f(1.0, 1.0, 1.0);
@@ -584,23 +523,32 @@ static void display(void) {
 void generateApple(int appleValue){
     switch (appleValue){
         case 1: //blanco
-            drawApple(1.0, 1.0, 1.0);
+            red = green = blue = 1;
+//            drawApple(1, 1, 1);
             break;
         case 2: //azul
-            drawApple(0, 0, 1.0);
+            red = green = 0;
+            blue = 1;
+//            drawApple(0, 0, 1);
             break;
         case 3: //rojo
-            drawApple(1.0, 0, 0);
+            red = 1;
+            green = blue = 0;
+//            drawApple(1, 0, 0);
             break;
         case 4: //amarillo
-            drawApple(1.0, 1.0, 0);
+            red = green = 1;
+            blue = 0;
+//            drawApple(1, 1, 0);
             break;
         case 5: //verde
-            drawApple(0, 1.0, 0);
+            red = blue = 0;
+            green = 1;
+//            drawApple(0, 1, 0);
             break;
         default: //no genera nada
             appleFlag = 0;
-            drawApple(1, 1, 1); //prueba
+//            drawApple(1, 1, 1); //prueba
             break;
     }
 
@@ -637,6 +585,9 @@ bool snakeHits(float x, float y) {
 
 void resetGame() {
     player->reset();
+    appleFlag = 0;
+    appleX = rand() % unitsPerRow + 1;
+    appleY = rand() % unitsPerCol + 1;
     score = 0;
 }
 
@@ -669,6 +620,14 @@ void myTimer(int valor) {
             appleY = rand() % unitsPerCol + 1;
             score += 1;
         }
+
+        /*
+        * 1 Manzana blanca: 25pts -> mediano
+        * 2 Manzana azul: reduce velocidad -> pequeño
+        * 3 Manzana rojo: por 10seg atropella obstaculos -> mediano
+        * 4 Manzana amarilla: 10pts -> pequeño
+        * 5 Manzana verde: 100pts -> grande
+         */
 
         // Si choca contra una especial
         if(snakeHits(specX, specY)){
