@@ -592,7 +592,7 @@ void resetGame() {
 }
 
 void myTimer(int valor) {
-//    int nextX, nextY;
+//    int nextX, nextY;ku
 
     if (showSplashScreen) {
         glutTimerFunc((unsigned int) (timerTick / speed), myTimer, 1);
@@ -634,13 +634,22 @@ void myTimer(int valor) {
             appleFlag = 0;
             specX = rand() % unitsPerRow + 3;
             specY = rand() % unitsPerCol + 3;
-            score += 100; //scoreMultiplier que sea funcion
+            scoreMultiplier = 0;
+            if(specialApple == 1)
+                scoreMultiplier = 25;
+            if(specialApple == 2)
+                speed = speed - 0.8;
+            if(specialApple == 4)
+                scoreMultiplier = 10;
+            if(specialApple == 5)
+                scoreMultiplier = 100;
+            score += scoreMultiplier;
+
         }
 
         if(appleFlag == 0){
             appleFlag = 1;
             specialApple = specialAppleValue();
-//            generateApple(specialApple);
         }
 
         if (!player->full()) {
