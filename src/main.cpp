@@ -41,6 +41,7 @@ int unitsPerRow = width / unitSize;
 int unitsPerCol = height / unitSize;
 
 int red, green, blue = 0;
+double radio = 0;
 /*
  Variables 2D
  ******************************/
@@ -374,7 +375,7 @@ void drawApple() {
         glColor3f(red, green, blue);
         glPushMatrix();
         glTranslated(xPos2d(specX), yPos2d(specY), 0.025);
-        glutSolidSphere(0.04, 10, 10);
+        glutSolidSphere(radio, 10, 10);
 //        glutSolidCube(0.05);
         glPopMatrix();
     }
@@ -524,31 +525,30 @@ void generateApple(int appleValue){
     switch (appleValue){
         case 1: //blanco
             red = green = blue = 1;
-//            drawApple(1, 1, 1);
+            radio = 0.04;
             break;
         case 2: //azul
             red = green = 0;
             blue = 1;
-//            drawApple(0, 0, 1);
+            radio = 0.02;
             break;
         case 3: //rojo
             red = 1;
             green = blue = 0;
-//            drawApple(1, 0, 0);
+            radio = 0.04;
             break;
         case 4: //amarillo
             red = green = 1;
             blue = 0;
-//            drawApple(1, 1, 0);
+            radio = 0.02;
             break;
         case 5: //verde
             red = blue = 0;
             green = 1;
-//            drawApple(0, 1, 0);
+            radio = 0.06;
             break;
         default: //no genera nada
             appleFlag = 0;
-//            drawApple(1, 1, 1); //prueba
             break;
     }
 
@@ -607,9 +607,6 @@ void myTimer(int valor) {
             (dirY == -1 && player->y() <= 0) )
         resetGame();
 
-//    nextX = player->x() + dirX;
-//    nextY = player->y() + dirY;
-
     appleAngle = (appleAngle >= 360) ? 0 : appleAngle + 5;
 
     // Crece la cola primero para que el jugador tenga mejor control
@@ -635,16 +632,16 @@ void myTimer(int valor) {
             specX = rand() % unitsPerRow + 3;
             specY = rand() % unitsPerCol + 3;
             scoreMultiplier = 0;
-            if(specialApple == 1)
+            if(specialApple == 1){
                 scoreMultiplier = 25;
-            if(specialApple == 2)
+            }else if(specialApple == 2){
                 speed = speed - 0.8;
-            if(specialApple == 4)
+            }else if(specialApple == 4){
                 scoreMultiplier = 10;
-            if(specialApple == 5)
+            }else if(specialApple == 5){
                 scoreMultiplier = 100;
+            }
             score += scoreMultiplier;
-
         }
 
         if(appleFlag == 0){
