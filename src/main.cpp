@@ -28,7 +28,16 @@ double minY = -1.0, maxY = 1.0;
 double width = 640;
 double height = 480;
 
-
+//struct para obstaculos
+struct atributos {
+    int f=0; //fila 48
+    int c=0; //colunma 64
+    int s=0; //select 2
+    int l=0; //largo 5
+};
+//n matriz que se usara para crear y mantener las coordenadas y atributos de los obstaculos
+atributos n[9];
+int i=0 ,j=0, k = 0,aux1 = 0, z = 0 ,k1 =0;
 /*
  Unidades de movimiento
  ******************************/
@@ -262,10 +271,12 @@ static void init() {
     glGenTextures(2, texName);
     Image *image;
 
-    image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
+    //image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
+    image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/snake.bmp");
     loadTexture(image, 0);
 
-    image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/apple.bmp");
+    //image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/apple.bmp");
+    image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/apple.bmp");
     loadTexture(image, 1);
 
     delete image;
@@ -361,70 +372,21 @@ void drawSplashScreen() {
     ss.clear();
 
 }
-
-static void drawMap(void) {
-//  glDisable(GL_LIGHTING);
-//  glDisable(GL_LIGHT0);
-//  glDisable(GL_DEPTH_TEST);
-//  glClear(GL_COLOR_BUFFER_BIT);
-
-    // Dibuja la Cuadrícula
-//  glColor3f(0.2, 0.0, 0.2);
-//  glLineWidth(1);
-
-//  glBegin(GL_LINES);
-//
-//  for(int i = 0; i <= unitsPerRow; i += 2) {
-//    glVertex2d(minX, xPos2d(i));
-//    glVertex2f(maxX, xPos2d(i));
-//    glVertex2d(xPos2d(i), minY);
-//    glVertex2f(xPos2d(i), maxY);
-//  }
-//
-//  glEnd();
-
-    // Dibuja el Marco
-//  glColor3f(0.6, 0.0, 0.6);
-//  glLineWidth(3);
-
-//  glBegin(GL_LINE_LOOP);
-//  glVertex2f(minX, minY);
-//  glVertex2f(minX, maxY);
-//  glVertex2f(maxX, maxY);
-//  glVertex2f(maxX, minY);
-//  glEnd();
-
-//  glLineWidth(1);
-
-    // Dibuja la Manzana
-//  glColor3f(1.0, 0.0, 0.0);
-//  glPointSize(6);
-//
-//  glBegin(GL_POINTS);
-//  glVertex2f(xPos2d(appleX), yPos2d(appleY));
-//  glEnd();
-//
-//  glPointSize(1);
-
-    // Dibuja la Serpiente
-//  glColor3f(1.0, 1.0, 0.0);
-//  glLineWidth(unitSize);
-//
-//  glBegin(GL_LINE_STRIP);
-//  for (int i = player->length - 1; i >= 0; i--) {
-//    glVertex2f(xPos2d(player->xAt(i)), yPos2d(player->yAt(i)));
-//  }
-//  glEnd();
-//
-//  glLineWidth(1);
-//
-    // Dibuja el Marcador
-//  glColor3f(1.0, 1.0, 1.0);
-//
-//  std::stringstream ss; // Helper para desplegar el marcador
-//  ss << "Score: " << std::to_string(score);
-//  drawString(GLUT_BITMAP_9_BY_15, ss.str().c_str(), -0.85, -0.85);
+static void crearobstaculos (void) {
+    if (aux1 == 0){
+        i = rand() % 10;
+        printf("(%d)",i);
+        for(j=0;j<i +1;j++) {
+            n[j].f = rand() % 48 + 1;
+            n[j].c = rand() % 64 + 1;
+            n[j].s = rand() % 2;
+            n[j].l = rand() % 5 + 1;
+            printf("(%d,%d,%d,%d)\n", n[j].f, n[j].c, n[j].s, n[j].l);
+        }
+    }
+    aux1 = 1;
 }
+
 
 static void drawPerspective(void) {
     glEnable(GL_DEPTH_TEST);
@@ -458,6 +420,7 @@ static void drawPerspective(void) {
 
     // Dibuja el Marco
     glColor3f(0.6, 0.0, 0.6);
+//derecha
 
     glPushMatrix();
     glTranslated(maxX + 0.05, 0.0, 0.0);
@@ -465,18 +428,77 @@ static void drawPerspective(void) {
     glutSolidCube(0.05);
     glPopMatrix();
 
+
+    //obstaculos aleatorios una funcion aparte? o solo el rand
+
+    crearobstaculos ();
+//    struct atributos {
+//        int f=0; //fila 48
+//        int c=0; //colunma 64
+//        int s=0; //select 2
+//        int l=0; //largo 5
+//    };
+//    i = rand() % 10;
+//    for(j=0;j<i +1;j++) {
+//        n[j].f = rand() % 48 +1;
+//        n[j].c = rand() % 64 +1;
+//        n[j].s = rand() % 2;
+//        n[j].l = rand() % 5 +1;
+//    }
+//tengo que poner un if para ver si sale del campo los obstaculos cuando son muy largos
+    for(j=0;j<i ;j++) { //posiciones de los obstaculos en el vector de atributos
+        printf("(%d,%d,%d,%d)p%d\n", n[j].f, n[j].c, n[j].s, n[j].l,j);
+        for(k=0;k < n[j].l;k++) {//largo del obstaculo
+            if( n[j].s == 1 ){ //crece en y
+               // if( (n[j].c +k) <= unitsPerCol){
+                    glPushMatrix();
+                    glTranslated(xPos2d(n[j].f), yPos2d(n[j].c +k), 0.0); //translada con parametros -1 a 1
+                    glScaled(1.0, 1.0, 1.0); //x 1 a 42 e y de 1 a 42 escala que tan largo sera en x o y
+                    glutSolidCube(0.05);
+                    glPopMatrix();
+                    printf("(%d,%d)cd,",n[j].f,n[j].c +k);
+               // }
+            }
+            if( n[j].s == 0 ){
+                //if( (n[j].f +k) <= unitsPerRow){
+                    glPushMatrix();
+                    glTranslated(xPos2d(n[j].f +k), yPos2d(n[j].c), 0.0); //translada con parametros -1 a 1
+                    glScaled(1.0, 1.0, 1.0); //x 1 a 42 e y de 1 a 42 escala que tan largo sera en x o y
+                    glutSolidCube(0.05);
+                    glPopMatrix();
+                    printf("(%d,%d)fd,",n[j].f +k,n[j].c);
+               // }
+            }
+        }
+        printf("\n...........\n");
+    }
+
+
+//**********************************
+    //prueba de obstaculo solo 1
+//    for(i=20;i<26;i++) {
+//        glPushMatrix();
+//        glTranslated(xPos2d(i), yPos2d(10), 0.0); //translada con parametros -1 a 1
+//        glScaled(1.0, 1.0, 1.0); //x 1 a 42 e y de 1 a 42 escala que tan largo sera en x o y
+//        glutSolidCube(0.05);
+//        glPopMatrix();
+//    }
+
+
+// izquierda
     glPushMatrix();
     glTranslated(minX - 0.05, 0.0, 0.0);
     glScaled(1.0, 1.0 * 41, 1.0);
     glutSolidCube(0.05);
     glPopMatrix();
 
+    //adelante
     glPushMatrix();
     glTranslated(0.0, minY - 0.05, 0.0);
     glScaled(1.0 * 43, 1.0, 1.0);
     glutSolidCube(0.05);
     glPopMatrix();
-
+//atras
     glPushMatrix();
     glTranslated(0.0, maxY + 0.05, 0.0);
     glScaled(1.0 * 43, 1.0, 1.0);
@@ -578,6 +600,7 @@ bool snakeHits(float x, float y) {
     return nextX == x && nextY == y;
 }
 
+
 void resetGame() {
     player->reset();
     dirX = 1;
@@ -587,22 +610,67 @@ void resetGame() {
 void myTimer(int valor) {
 //    int nextX, nextY;
 
+//    printf("(x%a,", player->x());
+//    printf("y%a)\n", player->y());
     if (showSplashScreen) {
         glutTimerFunc(timerTick / speed, myTimer, 1);
         return;
     }
 
+
+//compara la posisicion de los obstaculos para ver si choca
+    //hay que mirar bien porque suele chocar un punto x o y despues -- arreglado :D
+
+    for(z=0;z < i; z++) {
+        for(k1=0;k1 < n[z].l;k1++) {//largo del obstaculo
+            if( n[z].s == 1){ //crece en y
+                if (player->x() == n[z].f && player->y() == (n[z].c +k1)) { //choca con un obstaculo
+                    printf("(%d,%d)c\n", player->x(),player->y());
+                    showSplashScreen = true;
+                    init();
+                }
+            }if( n[z].s == 0){
+                if (player->x() == (n[z].f +k1) && player->y() == n[z].c) { //choca con un obstaculo
+                    printf("(%d,%d)f\n", player->x(),player->y());
+                    showSplashScreen = true;
+                    init();
+                }
+            }
+
+        }
+    }
+
+
+
+
+
+
+
+    //printf("(%a,%a)\n", player->x(),player->y());
     // Revisa si la Serpiente colisiona con el marco
     // y cambia la dirección cuando sea necesario
     if (dirX == 1 && player->x() >= unitsPerRow) {
+       // printf("(%a,%a)\nf", player->x(),player->y());
+        //printf("%i", dirY);
         //aca deberia reiniciar
-        resetGame();
+       // resetGame();
+       showSplashScreen = true;
+        init();
     } else if (dirX == -1 && player->x() <= 0) {
-        resetGame();
+        //resetGame();
+       // printf("(%a,%a)f\n", player->x(),player->y());
+        showSplashScreen = true;
+        init();
     } else if (dirY == 1 && player->y() >= unitsPerCol) {
-        resetGame();
+        //resetGame();
+        //printf("(%a,%a)f\n", player->x(),player->y());
+        showSplashScreen = true;
+        init();
     } else if (dirY == -1 && player->y() <= 0) {
-        resetGame();
+        //resetGame();
+        //printf("(%a,%a)f\n", player->x(),player->y());
+        showSplashScreen = true;
+        init();
     }
 
 //    nextX = player->x() + dirX;
@@ -630,7 +698,7 @@ void myTimer(int valor) {
             timerTick *= timerMultiplier;
         }
 
-        appleX = rand() % unitsPerRow + 1;
+        appleX = rand() % unitsPerRow + 1; //genera un numero entero ramdon para colocar la manzana
         appleY = rand() % unitsPerCol + 1;
 
         crece = 0;
@@ -706,7 +774,7 @@ void myKeyboard(unsigned char theKey, int mouseX, int mouseY) {
             break;
 
         case 13:
-            showSplashScreen = false;
+            showSplashScreen = false; //press enter
             break;
 
             // Salir

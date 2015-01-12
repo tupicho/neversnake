@@ -35,7 +35,8 @@ bool Snake::full() {
   return length == maxLength - 1;
 }
 
-bool Snake::hitsItself(int nextX, int nextY) {
+//usar para colisiones?
+bool Snake::hitsItself(int nextX, int nextY) { //funcion que compara la posicion siguiente con las posiciones del cuerpo de la vibora
   for (int i = length; i > 0; i--) {
     if (tail[i][0] == nextX && tail[i][1] == nextY) return true;
   }
