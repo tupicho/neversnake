@@ -28,7 +28,7 @@ void Snake::init() {
 }
 
 void Snake::eat() {
-  length++;
+  length = length + 2;
 }
 
 bool Snake::full() {

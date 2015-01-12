@@ -8,13 +8,15 @@
 
 #include <iostream>
 #include <sstream>
-
 #include <string.h>
+#include <math.h>
 
 #include "../cabeceras/image.h"
 #include "../cabeceras/snake.h"
 
 Snake *player;
+
+using namespace std;
 
 /*
    Windows
@@ -49,15 +51,9 @@ double unitSize = 10;
 int unitsPerRow = width / unitSize;
 int unitsPerCol = height / unitSize;
 
-
-/*
- Variables 2D
- ******************************/
-
-// Límites del Marco
-int limitX = unitsPerRow;
-int limitY = unitsPerCol;
-
+int red, green, blue = 0;
+double radio = 0;
+time_t start = time(0);
 
 /*
  Variables compartidas 2D/3D
@@ -69,8 +65,7 @@ int scoreMultiplier = 1;
 
 // Timer
 double timerTick = 65;
-double timerMultiplier = 0.8;
-double speed = 1.0;
+double speed = 0.5;
 
 // Dirección de movimiento
 int dirX = 1; // X=1 Derecha, X=-1 Izq.
@@ -81,6 +76,10 @@ bool showMap = false;
 
 // Flag para tipo de serpiente
 int snakeShape = 0;
+
+// Flag para manzana
+int appleFlag = 0;
+int specialApple = 0;
 
 // Guarda nombre de la textura
 static GLuint texName[36];
@@ -99,6 +98,7 @@ bool showSplashScreen = true;
 
 // Posición
 int appleX, appleY;
+int specX, specY;
 
 // Angulo de rotación
 int appleAngle = 0;
@@ -258,11 +258,13 @@ static void init() {
             100);            // maximum length of tail
 
     // Random seed
-    srand((int) time(NULL));
+    srand((unsigned int) time(NULL));
 
     // Genera la Manzana por primera vez
     appleX = rand() % unitsPerRow + 1;
+    specX = rand() % unitsPerRow + 3;
     appleY = rand() % unitsPerCol + 1;
+    specY = rand() % unitsPerCol + 3;
 
     // Crea menu
     initMenu();
@@ -275,9 +277,8 @@ static void init() {
     image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/snake.bmp");
     loadTexture(image, 0);
 
-    //image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/apple.bmp");
-    image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/apple.bmp");
-    loadTexture(image, 1);
+//    image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/apple.bmp");
+//    loadTexture(image, 1);
 
     delete image;
 }
@@ -372,6 +373,23 @@ void drawSplashScreen() {
     ss.clear();
 
 }
+
+void drawApple() {
+    if (appleFlag == 1) {
+        glColor3f(red, green, blue);
+        glPushMatrix();
+        glTranslated(xPos2d(specX), yPos2d(specY), 0.025);
+        glutSolidSphere(radio, 10, 10);
+//        glutSolidCube(0.05);
+        glPopMatrix();
+    }
+    glColor3f(0.5, 0.2, 0.7);
+    glPushMatrix();
+    glTranslated(xPos2d(appleX), yPos2d(appleY), 0.025);
+    glRotated(appleAngle, 0.3, 1.0, 0.0);
+    glutSolidSphere(0.04, 10, 10);
+//    glutSolidCube(0.05);
+    glPopMatrix();
 static void crearobstaculos (void) {
     if (aux1 == 0){
         i = rand() % 10;
@@ -386,7 +404,6 @@ static void crearobstaculos (void) {
     }
     aux1 = 1;
 }
-
 
 static void drawPerspective(void) {
     glEnable(GL_DEPTH_TEST);
@@ -419,7 +436,7 @@ static void drawPerspective(void) {
     glEnd();
 
     // Dibuja el Marco
-    glColor3f(0.6, 0.0, 0.6);
+    glColor3f(1, 1, 1);
 //derecha
 
     glPushMatrix();
@@ -508,45 +525,39 @@ static void drawPerspective(void) {
     glEnable(GL_TEXTURE_2D);
 
     // Dibuja la Manzana
-    glColor3f(1.5, 0.0, 0.0);
-
+    glBindTexture(GL_TEXTURE_2D, texName[1]);
     glEnable(GL_TEXTURE_GEN_S);
     glEnable(GL_TEXTURE_GEN_T);
-
-    glBindTexture(GL_TEXTURE_2D, texName[1]);
-
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+    drawApple();
 
-    glPushMatrix();
-    glTranslated(xPos2d(appleX), yPos2d(appleY), 0.025);
-    glRotated(appleAngle, 0.3, 1.0, 0.0);
-    glutSolidCube(0.05);
-    glPopMatrix();
-
-    // Dibuja la Serpiente
-    glColor3f(0.8, 1.0, 0.0);
+    // Dibuja la Serpientedr
+    glColor3f(1.0, 1.0, 1.0);
 
     glBindTexture(GL_TEXTURE_2D, texName[0]);
 
     for (int i = player->length - 1; i >= 0; i--) {
         glPushMatrix();
         glTranslated(xPos2d(player->xAt(i)), yPos2d(player->yAt(i)), 0.025);
-        glutSolidSphere(0.04, 10, 10);
+        glutSolidSphere(0.03, 10, 10);
 
         glPopMatrix();
     }
 
-//    glDisable(GL_TEXTURE_GEN_S);
-//    glDisable(GL_TEXTURE_GEN_T);
+    glDisable(GL_TEXTURE_GEN_S);
+    glDisable(GL_TEXTURE_GEN_T);
     glDisable(GL_TEXTURE_2D);
 
     // Dibuja el Marcador
     glColor3f(1.0, 1.0, 1.0);
 
     std::stringstream ss; // Helper para desplegar el marcador
+    std::stringstream sp;
+    sp << "Speed: " << std::to_string(speed);
+    draw3dString(GLUT_STROKE_MONO_ROMAN, sp.str().c_str(), -0.93, -0.85, 0.0);
     ss << "Score: " << std::to_string(score);
-    draw3dString(GLUT_STROKE_MONO_ROMAN, ss.str().c_str(), -0.85, -0.85, 0.0);
+    draw3dString(GLUT_STROKE_MONO_ROMAN, ss.str().c_str(), 0.5, -0.85, 0.0);
 }
 
 void reshape(int w, int h) {
@@ -590,6 +601,69 @@ static void display(void) {
     glutSwapBuffers();
 }
 
+void generateApple(int appleValue) {
+    switch (appleValue) {
+        case 1: //blanco
+            red = green = blue = 1;
+            radio = 0.04;
+            break;
+        case 2: //azul
+            red = green = 0;
+            blue = 1;
+            radio = 0.02;
+            break;
+        case 3: //rojo
+            red = 1;
+            green = blue = 0;
+            radio = 0.04;
+            break;
+        case 4: //amarillo
+            red = green = 1;
+            blue = 0;
+            radio = 0.02;
+            break;
+        case 5: //verde
+            red = blue = 0;
+            green = 1;
+            radio = 0.06;
+            break;
+        default: //no genera nada
+            appleFlag = 0;
+            break;
+    }
+
+}
+
+int specialAppleValue() {
+    //aca debería calcular la posibilidad de que salga cada manzana
+//        appleFlag = 1;
+    int probApple = (rand() % 300) + 1;
+    if (probApple <= 50) {
+        return 1; //blanco
+    } else if (probApple <= 70) {
+        return 2; //azul
+    } else if (probApple <= 85) {
+        return 3; //rojo
+    } else if (probApple <= 145) {
+        return 4; //amarillo
+    } else if (probApple <= 155) {
+        return 5; //verde
+    } else {
+        return 0; //nada
+    }
+}
+
+void snakessj(int val){
+    Image *image;
+    if(val){ //1 -> SI
+        image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/apple.bmp");
+    }else{
+        image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
+    }
+    loadTexture(image, 0);
+    delete image;
+}
+
 // Regresa verdadero si la serpiente colisiona con un par de puntos
 bool snakeHits(float x, float y) {
     double nextX, nextY;
@@ -600,20 +674,28 @@ bool snakeHits(float x, float y) {
     return nextX == x && nextY == y;
 }
 
-
 void resetGame() {
     player->reset();
-    dirX = 1;
-    dirY = 0;
+    start = time(0);
+    speed = 0.5;
+    appleFlag = 0;
+    appleX = rand() % (unitsPerRow - 1) + 2;
+    appleY = rand() % (unitsPerCol - 1) + 2;
+    score = 0;
 }
 
 void myTimer(int valor) {
-//    int nextX, nextY;
 
 //    printf("(x%a,", player->x());
 //    printf("y%a)\n", player->y());
+    double secondsSinceStart = difftime( time(0), start);
+
+    if(fmod(secondsSinceStart, 10) == 0){
+        speed += 0.05;
+    }
+
     if (showSplashScreen) {
-        glutTimerFunc(timerTick / speed, myTimer, 1);
+//        glutTimerFunc((unsigned int) (timerTick / speed), myTimer, 1);
         return;
     }
 
@@ -649,6 +731,11 @@ void myTimer(int valor) {
     //printf("(%a,%a)\n", player->x(),player->y());
     // Revisa si la Serpiente colisiona con el marco
     // y cambia la dirección cuando sea necesario
+//    if ((dirX == 1 && player->x() >= unitsPerRow) ||
+//            (dirX == -1 && player->x() <= 0) ||
+//            (dirY == 1 && player->y() >= unitsPerCol) ||
+//            (dirY == -1 && player->y() <= 0))
+//        resetGame();
     if (dirX == 1 && player->x() >= unitsPerRow) {
        // printf("(%a,%a)\nf", player->x(),player->y());
         //printf("%i", dirY);
@@ -673,43 +760,67 @@ void myTimer(int valor) {
         init();
     }
 
-//    nextX = player->x() + dirX;
-//    nextY = player->y() + dirY;
-
     appleAngle = (appleAngle >= 360) ? 0 : appleAngle + 5;
 
     // Crece la cola primero para que el jugador tenga mejor control
-    if (crece == 1 || snakeHits(appleX, appleY)) {
+    if (crece == 1 || snakeHits(appleX, appleY) || snakeHits(specX, specY)) {
+        // Incrementa el score si choca con una manzana normal
+        if (snakeHits(appleX, appleY)) {
+            appleX = rand() % (unitsPerRow - 1) + 1;
+            appleY = rand() % (unitsPerCol - 1) + 1;
+            score += 1;
+        }
 
-        // Incrementa el score
-        score += (1 * scoreMultiplier * speed);
+        /*
+        * 1 Manzana blanca: 25pts -> mediano
+        * 2 Manzana azul: reduce velocidad -> pequeño
+        * 3 Manzana rojo: por 10seg atropella obstaculos -> mediano
+        * 4 Manzana amarilla: 10pts -> pequeño
+        * 5 Manzana verde: 100pts -> grande
+         */
+
+        // Si choca contra una especial
+        if (snakeHits(specX, specY)) {
+            appleFlag = 0;
+            specX = rand() % (unitsPerRow - 1) + 1;
+            specY = rand() % (unitsPerCol - 1) + 1;
+            snakessj(1);
+            scoreMultiplier = 0;
+            if (specialApple == 1) {
+                scoreMultiplier = 25;
+            } else if (specialApple == 2) {
+                speed *= 0.5; //reduce la mitad
+            } else if (specialApple == 3) {
+                //FLAG DE OBSTACULOS
+            } else if (specialApple == 4) {
+                scoreMultiplier = 10;
+            } else if (specialApple == 5) {
+                scoreMultiplier = 100;
+            }
+            score += scoreMultiplier;
+        }
+
+        if (appleFlag == 0) {
+            appleFlag = 1;
+            specialApple = specialAppleValue();
+        }
 
         if (!player->full()) {
             player->eat();
-        } else {
-
-            // o Gana y regresa a su posición, dirección y tamaño inicial
-            resetGame();
-
-            // Ahora cada manzana vale más
-            scoreMultiplier++;
-
-            // y se aumenta la velocidad de movimiento
-            timerTick *= timerMultiplier;
         }
 
         appleX = rand() % unitsPerRow + 1; //genera un numero entero ramdon para colocar la manzana
         appleY = rand() % unitsPerCol + 1;
 
         crece = 0;
+        generateApple(specialApple);
     }
 
     if (!player->moveTo(dirX, dirY)) {
         resetGame();
         score = 0;
         scoreMultiplier = 1;
-        speed = 1.0;
-        timerMultiplier = 0.8;
+        speed = 0.5;
     }
 
     glutPostRedisplay();
@@ -750,37 +861,14 @@ void myKeyboard(unsigned char theKey, int mouseX, int mouseY) {
                 dirY = 0;
             }
             break;
-
-            // Crece el tamaño de la serpiente
-        case 'c':
-        case 'C':
-            crece = 1;
-            break;
-
-            // Esconde/despliega el mapa
-        case 'm':
-        case 'M':
-            showMap = !showMap;
-            break;
-
-            // Aumenta la velocidad
-        case 'v':
-            speed *= 1.1;
-            break;
-
-            // Disminuye la velocidad
-        case 'V':
-            speed *= 0.9;
-            break;
-
         case 13:
             showSplashScreen = false; //press enter
             break;
 
             // Salir
         case 27:
-        case 'e':
-        case 'E':
+//        case 'e':
+//        case 'E':
             exit(-1);
     }
 }
