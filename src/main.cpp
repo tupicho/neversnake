@@ -390,6 +390,8 @@ void drawApple() {
     glutSolidSphere(0.04, 10, 10);
 //    glutSolidCube(0.05);
     glPopMatrix();
+}
+
 static void crearobstaculos (void) {
     if (aux1 == 0){
         i = rand() % 10;
