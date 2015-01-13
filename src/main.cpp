@@ -274,7 +274,7 @@ static void init() {
     Image *image;
 
     //image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
-    image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/snake.bmp");
+    image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
     loadTexture(image, 0);
 
 //    image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/apple.bmp");
@@ -697,7 +697,7 @@ void myTimer(int valor) {
     }
 
     if (showSplashScreen) {
-//        glutTimerFunc((unsigned int) (timerTick / speed), myTimer, 1);
+        glutTimerFunc((unsigned int) (timerTick / speed), myTimer, 1);
         return;
     }
 
@@ -811,8 +811,8 @@ void myTimer(int valor) {
             player->eat();
         }
 
-        appleX = rand() % unitsPerRow + 1; //genera un numero entero ramdon para colocar la manzana
-        appleY = rand() % unitsPerCol + 1;
+//        appleX = rand() % unitsPerRow + 1; //genera un numero entero ramdon para colocar la manzana
+//        appleY = rand() % unitsPerCol + 1;
 
         crece = 0;
         generateApple(specialApple);
