@@ -273,12 +273,12 @@ static void init() {
     glGenTextures(2, texName);
     Image *image;
 
-    //image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
-    image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
+    //image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/snake.bmp");
+    image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/snake.bmp");
     loadTexture(image, 0);
 
-//    image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/apple.bmp");
-//    loadTexture(image, 1);
+    image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/apple.bmp");
+    loadTexture(image, 1);
 
     delete image;
 }
@@ -362,7 +362,7 @@ void drawSplashScreen() {
     ss.str("");
     ss.clear();
 
-    ss << "Copyright (C) 2014 Tupicho";
+    ss << "Copyright (C) 2014 Team Pro";
     drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 1.0);
     ss.str("");
     ss.clear();
@@ -397,8 +397,14 @@ static void crearobstaculos (void) {
         i = rand() % 10;
         printf("(%d)",i);
         for(j=0;j<i +1;j++) {
-            n[j].f = rand() % 48 + 1;
-            n[j].c = rand() % 64 + 1;
+            n[j].f = 0;
+            n[j].c = 0;
+            n[j].s = 0;
+            n[j].l = 0;
+        }
+        for(j=0;j<i +1;j++) {
+            n[j].f = rand() % unitsPerRow + 1;
+            n[j].c = rand() % unitsPerCol + 1;
             n[j].s = rand() % 2;
             n[j].l = rand() % 5 + 1;
             printf("(%d,%d,%d,%d)\n", n[j].f, n[j].c, n[j].s, n[j].l);
@@ -457,36 +463,30 @@ static void drawPerspective(void) {
 //        int s=0; //select 2
 //        int l=0; //largo 5
 //    };
-//    i = rand() % 10;
-//    for(j=0;j<i +1;j++) {
-//        n[j].f = rand() % 48 +1;
-//        n[j].c = rand() % 64 +1;
-//        n[j].s = rand() % 2;
-//        n[j].l = rand() % 5 +1;
-//    }
+
 //tengo que poner un if para ver si sale del campo los obstaculos cuando son muy largos
-    for(j=0;j<i ;j++) { //posiciones de los obstaculos en el vector de atributos
+    for(j=0;j<i+1 ;j++) { //posiciones de los obstaculos en el vector de atributos
         printf("(%d,%d,%d,%d)p%d\n", n[j].f, n[j].c, n[j].s, n[j].l,j);
-        for(k=0;k < n[j].l;k++) {//largo del obstaculo
+        for(k=0;k <= n[j].l ;k++) {//largo del obstaculo
             if( n[j].s == 1 ){ //crece en y
-               // if( (n[j].c +k) <= unitsPerCol){
+                if( (n[j].c +k) <= unitsPerCol){
                     glPushMatrix();
                     glTranslated(xPos2d(n[j].f), yPos2d(n[j].c +k), 0.0); //translada con parametros -1 a 1
                     glScaled(1.0, 1.0, 1.0); //x 1 a 42 e y de 1 a 42 escala que tan largo sera en x o y
                     glutSolidCube(0.05);
                     glPopMatrix();
-                    printf("(%d,%d)cd,",n[j].f,n[j].c +k);
-               // }
+                    printf("(%d,%d)cd,",n[j].f,n[j].c +k );
+                }
             }
             if( n[j].s == 0 ){
-                //if( (n[j].f +k) <= unitsPerRow){
+                if( (n[j].f +k) <= unitsPerRow){
                     glPushMatrix();
                     glTranslated(xPos2d(n[j].f +k), yPos2d(n[j].c), 0.0); //translada con parametros -1 a 1
                     glScaled(1.0, 1.0, 1.0); //x 1 a 42 e y de 1 a 42 escala que tan largo sera en x o y
                     glutSolidCube(0.05);
                     glPopMatrix();
-                    printf("(%d,%d)fd,",n[j].f +k,n[j].c);
-               // }
+                    printf("(%d,%d)fd,",n[j].f +k ,n[j].c);
+                }
             }
         }
         printf("\n...........\n");
@@ -658,9 +658,9 @@ int specialAppleValue() {
 void snakessj(int val){
     Image *image;
     if(val){ //1 -> SI
-        image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/apple.bmp");
+        image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/apple.bmp");
     }else{
-        image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
+        image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/snake.bmp");
     }
     loadTexture(image, 0);
     delete image;
@@ -705,19 +705,21 @@ void myTimer(int valor) {
 //compara la posisicion de los obstaculos para ver si choca
     //hay que mirar bien porque suele chocar un punto x o y despues -- arreglado :D
 
-    for(z=0;z < i; z++) {
-        for(k1=0;k1 < n[z].l;k1++) {//largo del obstaculo
+    for(z=0;z < i +1; z++) {
+        for(k1=0;k1 < n[z].l +1 ;k1++) {//largo del obstaculo
             if( n[z].s == 1){ //crece en y
                 if (player->x() == n[z].f && player->y() == (n[z].c +k1)) { //choca con un obstaculo
                     printf("(%d,%d)c\n", player->x(),player->y());
                     showSplashScreen = true;
-                    init();
+                   // resetGame();
+//                    init();
                 }
             }if( n[z].s == 0){
                 if (player->x() == (n[z].f +k1) && player->y() == n[z].c) { //choca con un obstaculo
                     printf("(%d,%d)f\n", player->x(),player->y());
                     showSplashScreen = true;
-                    init();
+                    //resetGame();
+                    //init();
                 }
             }
 
@@ -733,33 +735,36 @@ void myTimer(int valor) {
     //printf("(%a,%a)\n", player->x(),player->y());
     // Revisa si la Serpiente colisiona con el marco
     // y cambia la dirección cuando sea necesario
-//    if ((dirX == 1 && player->x() >= unitsPerRow) ||
-//            (dirX == -1 && player->x() <= 0) ||
-//            (dirY == 1 && player->y() >= unitsPerCol) ||
-//            (dirY == -1 && player->y() <= 0))
-//        resetGame();
+    if ((dirX == 1 && player->x() >= unitsPerRow) || (dirX == -1 && player->x() <= 0) ||
+            (dirY == 1 && player->y() >= unitsPerCol) ||
+            (dirY == -1 && player->y() <= 0)){
+        showSplashScreen = true;
+        resetGame();}
     if (dirX == 1 && player->x() >= unitsPerRow) {
        // printf("(%a,%a)\nf", player->x(),player->y());
         //printf("%i", dirY);
         //aca deberia reiniciar
-       // resetGame();
-       showSplashScreen = true;
-        init();
+      //  showSplashScreen = true;
+        resetGame();
+        //init();
     } else if (dirX == -1 && player->x() <= 0) {
         //resetGame();
        // printf("(%a,%a)f\n", player->x(),player->y());
-        showSplashScreen = true;
-        init();
+      //  showSplashScreen = true;
+        //init();
+        resetGame();
     } else if (dirY == 1 && player->y() >= unitsPerCol) {
         //resetGame();
         //printf("(%a,%a)f\n", player->x(),player->y());
-        showSplashScreen = true;
-        init();
+      //  showSplashScreen = true;
+        resetGame();
+        //init();
     } else if (dirY == -1 && player->y() <= 0) {
         //resetGame();
         //printf("(%a,%a)f\n", player->x(),player->y());
-        showSplashScreen = true;
-        init();
+       // showSplashScreen = true;
+        resetGame();
+        //init();
     }
 
     appleAngle = (appleAngle >= 360) ? 0 : appleAngle + 5;
