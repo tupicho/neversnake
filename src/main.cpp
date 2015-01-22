@@ -39,7 +39,7 @@ struct atributos {
 };
 //n matriz que se usara para crear y mantener las coordenadas y atributos de los obstaculos
 atributos n[9];
-int i=0 ,j=0, k = 0,aux1 = 0, z = 0 ,k1 =0;
+int i=0 ,j=0, k = 0,aux1 = 0, z = 0 ,k1 =0, aux2 = 0;
 /*
  Unidades de movimiento
  ******************************/
@@ -222,16 +222,17 @@ void initMenu(void) {
 
     menuPerspectiva = glutCreateMenu(onMenu);
     glutAddMenuEntry("3D", PERSP1);
-    glutAddMenuEntry("2D", PERSP2);
+    //glutAddMenuEntry("2D", PERSP2);
 
     menuSerpiente = glutCreateMenu(onMenu);
     glutAddMenuEntry("Esférica", SNAKE1);
     glutAddMenuEntry("Cubica", SNAKE2);
 
-    menuPrincipal = glutCreateMenu(onMenu);
+    glutCreateMenu(onMenu);
     glutAddSubMenu("Nivel", menuVelocidad);
-    glutAddSubMenu("Perspectiva (2D/3D)", menuPerspectiva);
+    glutAddSubMenu("Perspectiva (3D)", menuPerspectiva);
     glutAddSubMenu("Serpiente", menuSerpiente);
+
     glutAddMenuEntry("Salir", SALIR);
 
     glutAttachMenu(GLUT_RIGHT_BUTTON);
@@ -367,10 +368,62 @@ void drawSplashScreen() {
     ss.str("");
     ss.clear();
 
-    ss << "Press [ENTER] to Play";
-    drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, -0.60);
+//    ss << "Click derecho para las opciones";
+//    drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, -0.60);
+//    ss.str("");
+//    ss.clear();
+
+    ss << "Opciones";
+    drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.60);
     ss.str("");
     ss.clear();
+
+    if(aux2 == 0){
+        ss << "-> Jugar";
+        drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.50);
+        ss.str("");
+        ss.clear();
+        ss << "Ranking";
+        drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.40);
+        ss.str("");
+        ss.clear();
+        ss << "Niveles";
+        drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.30);
+        ss.str("");
+        ss.clear();
+    }
+
+
+    if(aux2 == 1){
+        ss << "Jugar";
+        drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.50);
+        ss.str("");
+        ss.clear();
+        ss << "-> Ranking";
+        drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.40);
+        ss.str("");
+        ss.clear();
+        ss << "Niveles";
+        drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.30);
+        ss.str("");
+        ss.clear();
+    }
+
+
+    if(aux2 == 2){
+        ss << "Jugar";
+        drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.50);
+        ss.str("");
+        ss.clear();
+        ss << "Ranking";
+        drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.40);
+        ss.str("");
+        ss.clear();
+        ss << "-> Niveles";
+        drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.30);
+        ss.str("");
+        ss.clear();
+    }
 
 }
 
@@ -877,6 +930,28 @@ void myKeyboard(unsigned char theKey, int mouseX, int mouseY) {
 //        case 'e':
 //        case 'E':
             exit(-1);
+        case 'n'://hay que cambiar por las flechas
+            printf("asd1\n");
+            if (aux2 > 0){
+                aux2 = aux2 -1;
+                display();
+                break;
+            }else {
+                aux2 = 2;
+                display();
+                break;
+            }
+        case 'm'://hay que cambiar por las flechas
+            printf("asd\n");
+            if (aux2 < 2){
+                aux2 = aux2 + 1;
+                display();//donde se crea la pantalla inicial
+                break;
+            }else{
+                aux2 = 0;
+                display();
+                break;
+            }
     }
 }
 
@@ -887,12 +962,12 @@ int main(int argc, char *argv[]) {
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutCreateWindow("Snake 3D - Amarilla/Villalba");
 
-    init();
-
-    glutDisplayFunc(display);
     glutReshapeFunc(reshape);
     glutKeyboardFunc(myKeyboard);
+    glutDisplayFunc(display);
     glutTimerFunc(2000, myTimer, 1);
+
+    init();
 
     glutMainLoop();
     return EXIT_SUCCESS;
