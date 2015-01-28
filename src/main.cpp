@@ -700,8 +700,6 @@ void resetGame() {
 
 void myTimer(int valor) {
 
-//    printf("(x%a,", player->x());
-//    printf("y%a)\n", player->y());
     double secondsSinceStart = difftime( time(0), start);
 
     if(fmod(secondsSinceStart, 100) == 0){
@@ -723,28 +721,17 @@ void myTimer(int valor) {
                 if (player->x() == n[z].f && player->y() == (n[z].c +k1)) { //choca con un obstaculo
                     printf("(%d,%d)c\n", player->x(),player->y());
                     showSplashScreen = true;
-                   // resetGame();
-//                    init();
                 }
             }if( n[z].s == 0){
                 if (player->x() == (n[z].f +k1) && player->y() == n[z].c) { //choca con un obstaculo
                     printf("(%d,%d)f\n", player->x(),player->y());
                     showSplashScreen = true;
-                    //resetGame();
-                    //init();
                 }
             }
 
         }
     }
 
-
-
-
-
-
-
-    //printf("(%a,%a)\n", player->x(),player->y());
     // Revisa si la Serpiente colisiona con el marco
     // y cambia la dirección cuando sea necesario
     if ((dirX == 1 && player->x() >= unitsPerRow) || (dirX == -1 && player->x() <= 0) ||
@@ -753,30 +740,13 @@ void myTimer(int valor) {
         showSplashScreen = true;
         resetGame();}
     if (dirX == 1 && player->x() >= unitsPerRow) {
-       // printf("(%a,%a)\nf", player->x(),player->y());
-        //printf("%i", dirY);
-        //aca deberia reiniciar
-      //  showSplashScreen = true;
         resetGame();
-        //init();
     } else if (dirX == -1 && player->x() <= 0) {
-        //resetGame();
-       // printf("(%a,%a)f\n", player->x(),player->y());
-      //  showSplashScreen = true;
-        //init();
         resetGame();
     } else if (dirY == 1 && player->y() >= unitsPerCol) {
-        //resetGame();
-        //printf("(%a,%a)f\n", player->x(),player->y());
-      //  showSplashScreen = true;
         resetGame();
-        //init();
     } else if (dirY == -1 && player->y() <= 0) {
-        //resetGame();
-        //printf("(%a,%a)f\n", player->x(),player->y());
-       // showSplashScreen = true;
         resetGame();
-        //init();
     }
 
     appleAngle = (appleAngle >= 360) ? 0 : appleAngle + 5;
@@ -828,9 +798,6 @@ void myTimer(int valor) {
             player->eat();
         }
 
-//        appleX = rand() % unitsPerRow + 1; //genera un numero entero ramdon para colocar la manzana
-//        appleY = rand() % unitsPerCol + 1;
-
         crece = 0;
         generateApple(specialApple);
     }
@@ -852,18 +819,6 @@ void myKeyboard(int key, int x, int y) {
     // Debe funcionar para mayuscula y minuscula.
     switch (key) {
         // Mueve la serpiente
-        case GLUT_KEY_UP:
-//            if (dirY != -1) {
-//                dirX = 0;
-//                dirY = 1;
-//            }
-            break;
-        case GLUT_KEY_DOWN:
-//            if (dirY != 1) {
-//                dirX = 0;
-//                dirY = -1;
-//            }
-            break;
         case GLUT_KEY_LEFT:
             if(dirX == 1 && dirY == 0){
                 //va a la derecha
@@ -910,8 +865,6 @@ void myKeyboard(int key, int x, int y) {
 
             // Salir
         case 27:
-//        case 'e':
-//        case 'E':
             exit(-1);
     }
     glutPostRedisplay();
