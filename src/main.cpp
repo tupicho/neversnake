@@ -262,9 +262,9 @@ static void init() {
 
     // Genera la Manzana por primera vez
     appleX = rand() % unitsPerRow + 1;
-    specX = rand() % unitsPerRow + 3;
+    specX = rand() % (unitsPerRow-1) + 3;
+    specY = rand() % (unitsPerCol-1) + 3;
     appleY = rand() % unitsPerCol + 1;
-    specY = rand() % unitsPerCol + 3;
 
     // Crea menu
     initMenu();
@@ -273,12 +273,12 @@ static void init() {
     glGenTextures(2, texName);
     Image *image;
 
-    //image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/snake.bmp");
-    image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/snake.bmp");
+    //image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
+    image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
     loadTexture(image, 0);
 
-    image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/apple.bmp");
-    loadTexture(image, 1);
+//    image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/apple.bmp");
+//    loadTexture(image, 1);
 
     delete image;
 }
@@ -394,9 +394,11 @@ void drawApple() {
 
 static void crearobstaculos (void) {
     if (aux1 == 0){
-        i = rand() % 10;
+        i = rand() % 10 + 5;
         printf("(%d)",i);
         for(j=0;j<i +1;j++) {
+//            n[j].f = rand() % unitsPerRow + 1;
+//            n[j].c = rand() % unitsPerCol + 1;
             n[j].f = 0;
             n[j].c = 0;
             n[j].s = 0;
@@ -463,7 +465,13 @@ static void drawPerspective(void) {
 //        int s=0; //select 2
 //        int l=0; //largo 5
 //    };
-
+//    i = rand() % 10;
+//    for(j=0;j<i +1;j++) {
+//        n[j].f = rand() % 48 +1;
+//        n[j].c = rand() % 64 +1;
+//        n[j].s = rand() % 2;
+//        n[j].l = rand() % 5 +1;
+//    }
 //tengo que poner un if para ver si sale del campo los obstaculos cuando son muy largos
     for(j=0;j<i+1 ;j++) { //posiciones de los obstaculos en el vector de atributos
         printf("(%d,%d,%d,%d)p%d\n", n[j].f, n[j].c, n[j].s, n[j].l,j);
@@ -658,9 +666,9 @@ int specialAppleValue() {
 void snakessj(int val){
     Image *image;
     if(val){ //1 -> SI
-        image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/apple.bmp");
+        image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/apple.bmp");
     }else{
-        image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/snake.bmp");
+        image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
     }
     loadTexture(image, 0);
     delete image;
@@ -677,6 +685,8 @@ bool snakeHits(float x, float y) {
 }
 
 void resetGame() {
+    if(dirX == -1 && dirY == 0)
+        dirX = 1;
     player->reset();
     start = time(0);
     speed = 0.5;
@@ -684,6 +694,8 @@ void resetGame() {
     appleX = rand() % (unitsPerRow - 1) + 2;
     appleY = rand() % (unitsPerCol - 1) + 2;
     score = 0;
+    aux1 = 0;
+    crearobstaculos();
 }
 
 void myTimer(int valor) {
@@ -692,7 +704,7 @@ void myTimer(int valor) {
 //    printf("y%a)\n", player->y());
     double secondsSinceStart = difftime( time(0), start);
 
-    if(fmod(secondsSinceStart, 10) == 0){
+    if(fmod(secondsSinceStart, 100) == 0){
         speed += 0.05;
     }
 
@@ -789,8 +801,8 @@ void myTimer(int valor) {
         // Si choca contra una especial
         if (snakeHits(specX, specY)) {
             appleFlag = 0;
-            specX = rand() % (unitsPerRow - 1) + 1;
-            specY = rand() % (unitsPerCol - 1) + 1;
+            specX = rand() % (unitsPerRow-1) + 3;
+            specY = rand() % (unitsPerCol-1) + 3;
             snakessj(1);
             scoreMultiplier = 0;
             if (specialApple == 1) {
@@ -834,41 +846,65 @@ void myTimer(int valor) {
     glutTimerFunc(timerTick / speed, myTimer, 1);
 }
 
-void myKeyboard(unsigned char theKey, int mouseX, int mouseY) {
+void myKeyboard(int key, int x, int y) {
     // Cambia el valor de dirX y dirY dependiendo de la tecla que oprima el usuario.
     // Activa la bandera de crecer para que la funcion `myTimer` crezca la serpiente en una unidad.
     // Debe funcionar para mayuscula y minuscula.
-    switch (theKey) {
+    switch (key) {
         // Mueve la serpiente
-        case 'w':
-        case 'W':
-            if (dirY != -1) {
+        case GLUT_KEY_UP:
+//            if (dirY != -1) {
+//                dirX = 0;
+//                dirY = 1;
+//            }
+            break;
+        case GLUT_KEY_DOWN:
+//            if (dirY != 1) {
+//                dirX = 0;
+//                dirY = -1;
+//            }
+            break;
+        case GLUT_KEY_LEFT:
+            if(dirX == 1 && dirY == 0){
+                //va a la derecha
                 dirX = 0;
                 dirY = 1;
-            }
-            break;
-        case 's':
-        case 'S':
-            if (dirY != 1) {
-                dirX = 0;
-                dirY = -1;
-            }
-            break;
-        case 'a':
-        case 'A':
-            if (dirX != 1) {
+            }else
+            if(dirX == 0 && dirY == 1){
+                //si se va arriba
                 dirX = -1;
                 dirY = 0;
-            }
-            break;
-        case 'd':
-        case 'D':
-            if (dirX != -1) {
+            }else
+            if(dirX == -1 && dirY == 0){
+                dirX = 0;
+                dirY = -1;
+            }else
+            if(dirX == 0 && dirY == -1){
                 dirX = 1;
                 dirY = 0;
             }
             break;
-        case 13:
+        case GLUT_KEY_RIGHT:
+            if(dirX == 1 && dirY == 0){
+                //va a la derecha
+                dirX = 0;
+                dirY = -1;
+            }else
+            if(dirX == 0 && dirY == 1){
+                //si se va arriba
+                dirX = 1;
+                dirY = 0;
+            }else
+            if(dirX == -1 && dirY == 0){
+                dirX = 0;
+                dirY = 1;
+            }else
+            if(dirX == 0 && dirY == -1){
+                dirX = -1;
+                dirY = 0;
+            }
+            break;
+        case GLUT_KEY_F5:
             showSplashScreen = false; //press enter
             break;
 
@@ -878,6 +914,8 @@ void myKeyboard(unsigned char theKey, int mouseX, int mouseY) {
 //        case 'E':
             exit(-1);
     }
+    glutPostRedisplay();
+
 }
 
 int main(int argc, char *argv[]) {
@@ -891,7 +929,8 @@ int main(int argc, char *argv[]) {
 
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
-    glutKeyboardFunc(myKeyboard);
+    glutSpecialFunc(myKeyboard);
+//    glutKeyboardFunc(myKeyboard);
     glutTimerFunc(2000, myTimer, 1);
 
     glutMainLoop();
