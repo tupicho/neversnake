@@ -39,7 +39,7 @@ struct atributos {
 };
 //n matriz que se usara para crear y mantener las coordenadas y atributos de los obstaculos
 atributos n[9];
-int i = 0, j = 0, k = 0, aux1 = 0, z = 0, k1 = 0;
+int i = 0, j = 0, k = 0, aux1 = 0, aux2 = 0, z = 0, k1 = 0;
 /*
  Unidades de movimiento
  ******************************/
@@ -54,7 +54,10 @@ int unitsPerCol = height / unitSize;
 int red, green, blue = 0;
 double radio = 0;
 time_t start = time(0);
+time_t traspasaTimeIni = time(0);
+
 int isTime = 1;
+int traspasarParedes = 1;
 /*
  Variables compartidas 2D/3D
  ******************************/
@@ -262,10 +265,10 @@ static void init() {
     srand((unsigned int) time(NULL));
 
     // Genera la Manzana por primera vez
-    appleX = rand() % unitsPerRow + 1;
+    appleX = rand() % (unitsPerRow - 1) + 3;
     specX = rand() % (unitsPerRow - 1) + 3;
     specY = rand() % (unitsPerCol - 1) + 3;
-    appleY = rand() % unitsPerCol + 1;
+    appleY = rand() % (unitsPerCol - 1) + 3;
 
     // Crea menu
     initMenu();
@@ -274,12 +277,12 @@ static void init() {
     glGenTextures(2, texName);
     Image *image;
 
-    //image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/snake.bmp");
-    image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/snake.bmp");
+    //image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
+    image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
     loadTexture(image, 0);
 
-    image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/apple.bmp");
-    loadTexture(image, 1);
+//    image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/apple.bmp");
+//    loadTexture(image, 1);
 
     delete image;
 }
@@ -433,7 +436,6 @@ void drawApple() {
         glPushMatrix();
         glTranslated(xPos2d(specX), yPos2d(specY), 0.025);
         glutSolidSphere(radio, 10, 10);
-//        glutSolidCube(0.05);
         glPopMatrix();
     }
     glColor3f(0.5, 0.2, 0.7);
@@ -441,7 +443,6 @@ void drawApple() {
     glTranslated(xPos2d(appleX), yPos2d(appleY), 0.025);
     glRotated(appleAngle, 0.3, 1.0, 0.0);
     glutSolidSphere(0.04, 10, 10);
-//    glutSolidCube(0.05);
     glPopMatrix();
 }
 
@@ -498,7 +499,7 @@ static void drawPerspective(void) {
 
     // Dibuja el Marco
     glColor3f(1, 1, 1);
-//derecha
+    //derecha
 
     glPushMatrix();
     glTranslated(maxX + 0.05, 0.0, 0.0);
@@ -709,10 +710,10 @@ int specialAppleValue() {
 
 void snakessj(int val) {
     Image *image;
-    if(val){ //1 -> SI
-        image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/apple.bmp");
-    }else{
-        image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/snake.bmp");
+    if (val == 1) { //1 -> SI
+        image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/apple.bmp");
+    } else if(val == 0) {
+        image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
     }
     loadTexture(image, 0);
     delete image;
@@ -733,18 +734,24 @@ void resetGame() {
         dirX = 1;
     player->reset();
     start = time(0);
-    speed = 0.5;
+    speed = 1;
     appleFlag = 0;
     appleX = rand() % (unitsPerRow - 1) + 2;
     appleY = rand() % (unitsPerCol - 1) + 2;
     score = 0;
     aux1 = 0;
+    snakessj(0);
     crearobstaculos();
 }
 
 void myTimer(int valor) {
 
     double secondsSinceStart = difftime(time(0), start);
+
+    if(difftime(time(0), traspasaTimeIni) > 10){
+        traspasarParedes = 1;
+        snakessj(0);
+    }
 
     if (fmod(secondsSinceStart, 10) == 0) {
         if (isTime) {
@@ -764,18 +771,21 @@ void myTimer(int valor) {
     //compara la posisicion de los obstaculos para ver si choca
     //hay que mirar bien porque suele chocar un punto x o y despues -- arreglado :D
 
+    if(traspasarParedes)
     for (z = 0; z < i + 1; z++) {
         for (k1 = 0; k1 < n[z].l + 1; k1++) {//largo del obstaculo
             if (n[z].s == 1) { //crece en y
                 if (player->x() == n[z].f && player->y() == (n[z].c + k1)) { //choca con un obstaculo
                     printf("(%d,%d)c\n", player->x(), player->y());
                     showSplashScreen = true;
+                    resetGame();
                 }
             }
             if (n[z].s == 0) {
                 if (player->x() == (n[z].f + k1) && player->y() == n[z].c) { //choca con un obstaculo
                     printf("(%d,%d)f\n", player->x(), player->y());
                     showSplashScreen = true;
+                    resetGame();
                 }
             }
 
@@ -839,6 +849,9 @@ void myTimer(int valor) {
                 speed *= 0.5; //reduce la mitad
             } else if (specialApple == 3) {
                 //FLAG DE OBSTACULOS
+                snakessj(1);
+                traspasarParedes = 0;
+                traspasaTimeIni = time(0);
             } else if (specialApple == 4) {
                 scoreMultiplier = 10;
             } else if (specialApple == 5) {
@@ -864,7 +877,6 @@ void myTimer(int valor) {
         resetGame();
         score = 0;
         scoreMultiplier = 1;
-        speed = 0.5;
     }
 
     glutPostRedisplay();
