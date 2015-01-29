@@ -383,11 +383,11 @@ void drawSplashScreen() {
         drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.50);
         ss.str("");
         ss.clear();
-        ss << "Ranking";
+        ss << "   Ranking";
         drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.40);
         ss.str("");
         ss.clear();
-        ss << "Niveles";
+        ss << "   Niveles";
         drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.30);
         ss.str("");
         ss.clear();
@@ -395,7 +395,7 @@ void drawSplashScreen() {
 
 
     if(aux2 == 1){
-        ss << "Jugar";
+        ss << "   Jugar";
         drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.50);
         ss.str("");
         ss.clear();
@@ -403,7 +403,7 @@ void drawSplashScreen() {
         drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.40);
         ss.str("");
         ss.clear();
-        ss << "Niveles";
+        ss << "   Niveles";
         drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.30);
         ss.str("");
         ss.clear();
@@ -411,11 +411,11 @@ void drawSplashScreen() {
 
 
     if(aux2 == 2){
-        ss << "Jugar";
+        ss << "   Jugar";
         drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.50);
         ss.str("");
         ss.clear();
-        ss << "Ranking";
+        ss << "   Ranking";
         drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.40);
         ss.str("");
         ss.clear();
@@ -764,15 +764,18 @@ void myTimer(int valor) {
                 if (player->x() == n[z].f && player->y() == (n[z].c +k1)) { //choca con un obstaculo
                     printf("(%d,%d)c\n", player->x(),player->y());
                     showSplashScreen = true;
-                   // resetGame();
-//                    init();
+                    resetGame();
+                    display();
+                    //init();
                 }
             }if( n[z].s == 0){
                 if (player->x() == (n[z].f +k1) && player->y() == n[z].c) { //choca con un obstaculo
                     printf("(%d,%d)f\n", player->x(),player->y());
                     showSplashScreen = true;
-                    //resetGame();
-                    //init();
+                    resetGame();
+                    display();
+
+                   // init();
                 }
             }
 
@@ -792,31 +795,38 @@ void myTimer(int valor) {
             (dirY == 1 && player->y() >= unitsPerCol) ||
             (dirY == -1 && player->y() <= 0)){
         showSplashScreen = true;
-        resetGame();}
+        resetGame();
+        display();
+    }
     if (dirX == 1 && player->x() >= unitsPerRow) {
        // printf("(%a,%a)\nf", player->x(),player->y());
         //printf("%i", dirY);
         //aca deberia reiniciar
-      //  showSplashScreen = true;
+        showSplashScreen = true;
         resetGame();
+        display();
         //init();
     } else if (dirX == -1 && player->x() <= 0) {
-        //resetGame();
+
        // printf("(%a,%a)f\n", player->x(),player->y());
-      //  showSplashScreen = true;
-        //init();
+        showSplashScreen = true;
         resetGame();
+        display();
+        //init();
+        //resetGame();
     } else if (dirY == 1 && player->y() >= unitsPerCol) {
         //resetGame();
         //printf("(%a,%a)f\n", player->x(),player->y());
-      //  showSplashScreen = true;
+        showSplashScreen = true;
         resetGame();
+        display();
         //init();
     } else if (dirY == -1 && player->y() <= 0) {
         //resetGame();
         //printf("(%a,%a)f\n", player->x(),player->y());
-       // showSplashScreen = true;
+        showSplashScreen = true;
         resetGame();
+        display();
         //init();
     }
 
@@ -922,7 +932,9 @@ void myKeyboard(unsigned char theKey, int mouseX, int mouseY) {
             }
             break;
         case 13:
-            showSplashScreen = false; //press enter
+            if(aux2 == 0) {
+                showSplashScreen = false; //press enter
+            }
             break;
 
             // Salir
