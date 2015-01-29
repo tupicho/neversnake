@@ -774,7 +774,6 @@ void myTimer(int valor) {
                     showSplashScreen = true;
                     resetGame();
                     display();
-
                    // init();
                 }
             }
