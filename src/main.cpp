@@ -26,6 +26,8 @@ using namespace std;
 double minX = -1.0, maxX = 1.0;
 double minY = -1.0, maxY = 1.0;
 
+int nivel = 1;
+
 // Ancho y alto de la ventana
 double width = 640;
 double height = 480;
@@ -113,7 +115,7 @@ int appleAngle = 0;
 
 // Flag para el evento "crece"
 int crece = 0;
-
+int mScore = 100;
 
 /** -- Fin de las variables -- **/
 
@@ -418,11 +420,6 @@ void drawSplashScreen() {
     ss.str("");
     ss.clear();
 
-//    ss << "Click derecho para las opciones";
-//    drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, -0.60);
-//    ss.str("");
-//    ss.clear();
-
     ss << "Opciones";
     drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.60);
     ss.str("");
@@ -495,15 +492,19 @@ void drawApple() {
 }
 
 static void crearobstaculos (void) {
+
     if (aux1 == 0){
-        i = rand() % 10 + 5;
-        printf("(%d)",i);
+        aux1 = 1;
+
         for(j=0;j<i +1;j++) {
             n[j].f = 0;
             n[j].c = 0;
             n[j].s = 0;
             n[j].l = 0;
         }
+
+        i = 3*nivel;
+        printf("(obs: %d)",i);
         for(j=0;j<i +1;j++) {
             n[j].f = rand() % unitsPerRow + 1;
             n[j].c = rand() % unitsPerCol + 1;
@@ -512,7 +513,7 @@ static void crearobstaculos (void) {
             printf("(%d,%d,%d,%d)\n", n[j].f, n[j].c, n[j].s, n[j].l);
         }
     }
-    aux1 = 1;
+
 }
 
 static void drawPerspective(void) {
@@ -559,16 +560,11 @@ static void drawPerspective(void) {
     //obstaculos aleatorios una funcion aparte? o solo el rand
 
     crearobstaculos();
-//    struct atributos {
-//        int f=0; //fila 48
-//        int c=0; //colunma 64
-//        int s=0; //select 2
-//        int l=0; //largo 5
-//    };
 
 //tengo que poner un if para ver si sale del campo los obstaculos cuando son muy largos
     for(j=0;j<i+1 ;j++) { //posiciones de los obstaculos en el vector de atributos
         printf("(%d,%d,%d,%d)p%d\n", n[j].f, n[j].c, n[j].s, n[j].l,j);
+        if(n[j].l < 7 && (n[j].s == 0 || n[j].s == 1)){
         for(k=0;k <= n[j].l ;k++) {//largo del obstaculo
             if( n[j].s == 1 ){ //crece en y
                 if( (n[j].c +k) <= unitsPerCol){
@@ -592,34 +588,23 @@ static void drawPerspective(void) {
             }
         }
         printf("\n...........\n");
+        }
     }
 
-
-//**********************************
-    //prueba de obstaculo solo 1
-//    for(i=20;i<26;i++) {
-//        glPushMatrix();
-//        glTranslated(xPos2d(i), yPos2d(10), 0.0); //translada con parametros -1 a 1
-//        glScaled(1.0, 1.0, 1.0); //x 1 a 42 e y de 1 a 42 escala que tan largo sera en x o y
-//        glutSolidCube(0.05);
-//        glPopMatrix();
-//    }
-
-
-// izquierda
+    // izquierda
     glPushMatrix();
     glTranslated(minX - 0.05, 0.0, 0.0);
     glScaled(1.0, 1.0 * 41, 1.0);
     glutSolidCube(0.05);
     glPopMatrix();
 
-    //adelante
+    // adelante
     glPushMatrix();
     glTranslated(0.0, minY - 0.05, 0.0);
     glScaled(1.0 * 43, 1.0, 1.0);
     glutSolidCube(0.05);
     glPopMatrix();
-//atras
+    // atras
     glPushMatrix();
     glTranslated(0.0, maxY + 0.05, 0.0);
     glScaled(1.0 * 43, 1.0, 1.0);
@@ -807,10 +792,9 @@ void myTimer(int valor) {
         snakessj(0);
     }
 
-    if (fmod(secondsSinceStart, 10) == 0) {
+    if (fmod(secondsSinceStart, 100) == 0) {
         if (isTime) {
             speed = speed*1.1;
-            aux1=0;
             isTime = 0;
         }
     } else {
@@ -822,9 +806,8 @@ void myTimer(int valor) {
         return;
     }
 
-    //compara la posisicion de los obstaculos para ver si choca
+    //compara la posicion de los obstaculos para ver si choca
     //hay que mirar bien porque suele chocar un punto x o y despues -- arreglado :D
-
     if(traspasarParedes)
     for (z = 0; z < i + 1; z++) {
         for (k1 = 0; k1 < n[z].l + 1; k1++) {//largo del obstaculo
@@ -846,13 +829,6 @@ void myTimer(int valor) {
         }
     }
 
-
-
-
-
-
-
-    //printf("(%a,%a)\n", player->x(),player->y());
     // Revisa si la Serpiente colisiona con el marco
     // y cambia la dirección cuando sea necesario
     if ((dirX == 1 && player->x() >= unitsPerRow) || (dirX == -1 && player->x() <= 0) ||
@@ -895,7 +871,6 @@ void myTimer(int valor) {
             appleFlag = 0;
             specX = rand() % (unitsPerRow - 1) + 3;
             specY = rand() % (unitsPerCol - 1) + 3;
-            snakessj(1);
             scoreMultiplier = 0;
             if (specialApple == 1) {
                 scoreMultiplier = 25;
@@ -932,6 +907,12 @@ void myTimer(int valor) {
         score = 0;
         scoreMultiplier = 1;
     }
+
+    if(mScore > score%200){
+        aux1 = 0;
+        nivel++;
+    }
+    mScore = score%200;
 
     glutPostRedisplay();
     glutTimerFunc(timerTick / speed, myTimer, 1);
@@ -977,14 +958,11 @@ void myKeyboard(int key, int x, int y) {
                 dirY = 0;
             }
             break;
-        case GLUT_KEY_F5:
-            showSplashScreen = false; //press enter
-            break;
-
-            // Salir
+        // Salir
         case 27:
             exit(-1);
     }
+
     glutPostRedisplay();
 
 }
