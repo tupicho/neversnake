@@ -39,7 +39,7 @@ struct atributos {
 };
 //n matriz que se usara para crear y mantener las coordenadas y atributos de los obstaculos
 atributos n[9];
-int i = 0, j = 0, k = 0, aux1 = 0, aux2 = 0, z = 0, k1 = 0;
+int i = 0, j = 0, k = 0, aux1 = 0, z = 0, k1 = 0, aux2 = 0, aux3 = 0;
 /*
  Unidades de movimiento
  ******************************/
@@ -353,13 +353,60 @@ void draw3dString(void *font, const char *s, float x, float y, float z) {
     glPopMatrix();
 }
 
-void drawSplashScreen() {
-    glClear(GL_COLOR_BUFFER_BIT);
+
+void instrucciones() {
+//se apaga para que se vea mas iluminado cuando pierde
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_LIGHT0);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glColor3f(0.0, 1.0, 0.0);
     glLineWidth(1);
 
     std::stringstream ss; // Helper para desplegar el marcador
+
+    glPushMatrix();
+
+    ss << "Snake 3D Instrucciones";
+    drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 1.08);
+    ss.str("");
+    ss.clear();
+
+    ss <<   "En el plano del juego se encuentran alimentos, paredes y obstáculos, estos últimos deben\n"
+            "ser evitados, mediante la maniobra adecuada. Los obstáculos y paredes tiene que tener\n"
+            "textura sólidas (no transparentes)\n"
+            "Los tipos de alimentos son:\n"
+            "\uF0B7 Esfera de color blanco dan 25 pts, tamaño mediano (Probabilidad 50%).\n"
+            "\uF0B7 Esfera de color azul, tamaño pequeño, reducen en un factor la velocidad\n"
+            "(Probabilidad 20%).\n"
+            "\uF0B7 Esfera de color rojo, tamaño mediano, permite por 10 segundos atropellar todo\n"
+            "tipo de obstáculos sin perder la vida (Probabilidad 15%) OBS.: solamente\n"
+            "obstáculos se puede atropellar, las paredes no.\n"
+            "\uF0B7 Esferas de color amarillo dan 10 pts, tamaño pequeño (Probabilidad 60%)\n"
+            "\uF0B7 Esferas de color verde dan 100 pts, tamaño grande, aparición (Probabilidad 10%)";
+    drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 1.08);
+    ss.str("");
+    ss.clear();
+
+    aux3=9;
+}
+
+void drawSplashScreen() {
+//se apaga para que se vea mas iluminado cuando pierde
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_LIGHT0);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glColor3f(0.0, 1.0, 0.0);
+    glLineWidth(1);
+
+    std::stringstream ss; // Helper para desplegar el marcador
+
+    glPushMatrix();
 
     ss << "Snake 3D version 1.00";
     drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 1.08);
@@ -390,7 +437,7 @@ void drawSplashScreen() {
         drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.40);
         ss.str("");
         ss.clear();
-        ss << "   Niveles";
+        ss << "   Instrucciones";
         drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.30);
         ss.str("");
         ss.clear();
@@ -406,7 +453,7 @@ void drawSplashScreen() {
         drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.40);
         ss.str("");
         ss.clear();
-        ss << "   Niveles";
+        ss << "   Instrucciones";
         drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.30);
         ss.str("");
         ss.clear();
@@ -422,11 +469,12 @@ void drawSplashScreen() {
         drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.40);
         ss.str("");
         ss.clear();
-        ss << "-> Niveles";
+        ss << "-> Instrucciones";
         drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.30);
         ss.str("");
         ss.clear();
     }
+    glPopMatrix();
 
 }
 
@@ -626,6 +674,7 @@ void reshape(int w, int h) {
 static void display(void) {
     double snakeX, snakeY;
 
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
@@ -652,9 +701,14 @@ static void display(void) {
         drawPerspective();
 
     }
+    if (aux3 == 2){
+        instrucciones();
+
+    }
 
 
     glutSwapBuffers();
+
 }
 
 void generateApple(int appleValue) {
@@ -710,10 +764,10 @@ int specialAppleValue() {
 
 void snakessj(int val) {
     Image *image;
-    if (val == 1) { //1 -> SI
-        image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/apple.bmp");
-    } else if(val == 0) {
-        image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
+    if(val){ //1 -> SI
+        image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/apple.bmp");
+    }else{
+        image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/snake.bmp");
     }
     loadTexture(image, 0);
     delete image;
@@ -979,6 +1033,13 @@ void myKey(unsigned char key, int x, int y) {
             if(aux2 == 0) {
                 showSplashScreen = false; //press enter
             }
+            if(aux2 == 2){
+                aux3 = 2;
+            }
+            if(aux3 == 9){
+                display();
+            }
+
             break;
 
             // Salir
@@ -988,11 +1049,11 @@ void myKey(unsigned char key, int x, int y) {
             printf("asd1\n");
             if (aux2 > 0){
                 aux2 = aux2 -1;
-                display();
+                //display();
                 break;
             }else {
                 aux2 = 2;
-                display();
+                //display();
                 break;
             }
         case 'm'://hay que cambiar por las flechas
@@ -1020,7 +1081,7 @@ int main(int argc, char *argv[]) {
 
     init();
 
-    glutDisplayFunc(display);
+   // glutDisplayFunc(display);
     glutReshapeFunc(reshape);
     glutDisplayFunc(display);
     glutKeyboardFunc(myKey);
