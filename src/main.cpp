@@ -151,7 +151,7 @@ static void init() {
     glGenTextures(2, texName);
     Image *image;
 
-    image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/pielNormal.bmp");
+    image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/pielNormal.bmp");
     loadTexture(image, 0);
 
     delete image;
@@ -689,9 +689,9 @@ int specialAppleValue() {
 void snakessj(int val) {
     Image *image;
     if (val == 1) { //1 -> SI
-        image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/pielRoja.bmp");
+        image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/pielRoja.bmp");
     } else if(val == 0) {
-        image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/pielNormal.bmp");
+        image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/pielNormal.bmp");
     }
     loadTexture(image, 0);
     delete image;
@@ -990,6 +990,7 @@ void myKey(unsigned char key, int x, int y) {
             // Salir
         case 27:
 //            exit(-1);
+            scorePrint  = score;
             aux3 = 5;
             showSplashScreen = true;
         case 'n'://hay que cambiar por las flechas
