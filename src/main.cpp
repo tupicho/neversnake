@@ -20,8 +20,8 @@ double minY = -1.0, maxY = 1.0;
 int nivel = 1;
 
 // Ancho y alto de la ventana
-double width = 640;
-double height = 480;
+double ancho = 640;
+double alto = 480;
 
 // Struct para obstaculos
 struct atributos {
@@ -39,11 +39,11 @@ int i = 0, j = 0, k = 0, aux1 = 0, z = 0, k1 = 0, aux2 = 0, aux3 = 0;
  ******************************/
 
 // Tamaño de cada unidad de espacio
-double unitSize = 10;
+double unidadDeEspacio = 10;
 
 // Unidades por fila y por columna
-int unitsPerRow = width / unitSize;
-int unitsPerCol = height / unitSize;
+int unidadesPorFila = ancho / unidadDeEspacio;
+int unidadesPorCol = alto / unidadDeEspacio;
 
 int red, green, blue = 0;
 double radio = 0;
@@ -57,11 +57,11 @@ int traspasarParedes = 1;
  ******************************/
 
 // Marcador
-int score = 0, scoreprint = 0;
+int score = 0, scorePrint = 0;
 int scoreMultiplier = 1;
 
 // Timer
-double timerTick = 65;
+double milisegundos = 65;
 double speed = 1;
 
 // Dirección de movimiento
@@ -111,7 +111,7 @@ void loadTexture(Image *image, int k) {
     glTexImage2D(GL_TEXTURE_2D,               // Always GL_TEXTURE_2D
             0,                           // 0 for now
             GL_RGB,                      // Format OpenGL uses for image
-            image->width, image->height, // Width and height
+            image->width, image->height, // Width and alto
             0,                           // The border of the image
             GL_RGB,                      // GL_RGB, because pixels are stored in RGB format
             GL_UNSIGNED_BYTE,            // GL_UNSIGNED_BYTE, because pixels are stored
@@ -132,20 +132,20 @@ static void init() {
 
     /**
     * Posiciones iniciales
-    * x -> unitsPerRow/2
-    * y -> unitsPerCol/2
+    * x -> unidadesPorFila/2
+    * y -> unidadesPorCol/2
     * max length es el 100
     */
-    player = new Snake(unitsPerRow / 2, unitsPerCol / 2, 100);
+    player = new Snake(unidadesPorFila / 2, unidadesPorCol / 2, 100);
 
     // Random seed
     srand((unsigned int) time(NULL));
 
     // Genera la Manzana por primera vez
-    appleX = rand() % (unitsPerRow - 1) + 3;
-    appleY = rand() % (unitsPerCol - 1) + 3;
-    specX = rand() % (unitsPerRow - 1) + 3;
-    specY = rand() % (unitsPerCol - 1) + 3;
+    appleX = rand() % (unidadesPorFila - 1) + 3;
+    appleY = rand() % (unidadesPorCol - 1) + 3;
+    specX = rand() % (unidadesPorFila - 1) + 3;
+    specY = rand() % (unidadesPorCol - 1) + 3;
 
     // Texturas
     glGenTextures(2, texName);
@@ -160,22 +160,22 @@ static void init() {
 
 /*
  * x - posición en x del tablero
- * Regresa la posición x para desplegarse en 2D
+ * Regresa la posición x para desplegarse
  */
-double xPos2d(int x) {
+double xPosicion(int x) {
     double wide = maxX - minX;
-    double mappedX = x * (wide / unitsPerRow);
+    double mappedX = x * (wide / unidadesPorFila);
 
     return minX + mappedX;
 }
 
 /*
  * y - posición en y del tablero
- * Regresa la posición y para desplegarse en 2D
+ * Regresa la posición y para desplegarse
  */
-double yPos2d(int y) {
+double yPosicion(int y) {
     double tall = maxY - minY;
-    double mappedY = y * (tall / unitsPerCol);
+    double mappedY = y * (tall / unidadesPorCol);
 
     return minY + mappedY;
 }
@@ -189,6 +189,7 @@ void drawString(void *font, const char *s, float x, float y) {
         glutBitmapCharacter(font, s[i]);
 }
 
+// Dibuja las lineas para los obstaculos
 void draw3dString(void *font, const char *s, float x, float y, float z) {
     unsigned int i;
 
@@ -218,7 +219,7 @@ void scoreF(){
     //tablarank();
     glPushMatrix();
 
-    glColor3f(0.0, 1.0, 0.0);
+    glColor3f(0, 0, 0);
     glLineWidth(1);
 
     std::stringstream ss; // Helper para desplegar el marcador
@@ -230,7 +231,7 @@ void scoreF(){
     ss.str("");
     ss.clear();
 
-    ss << "Score: " << std::to_string(scoreprint);
+    ss << "Score: " << std::to_string(scorePrint);
     draw3dString(GLUT_STROKE_MONO_ROMAN, ss.str().c_str(), 0.5, -0.85, 0.0);
 
     glPopMatrix();
@@ -329,14 +330,14 @@ void instrucciones() {
 }
 
 void drawSplashScreen() {
-//se apaga para que se vea mas iluminado cuando pierde
+    //se apaga para que se vea mas iluminado cuando pierde
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_LIGHTING);
     glDisable(GL_LIGHT0);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glColor3f(0.0, 1.0, 0.0);
+    glColor3f(0, 0, 0);
     glLineWidth(1);
 
     std::stringstream ss; // Helper para desplegar el marcador
@@ -412,19 +413,20 @@ void drawApple() {
     if (appleFlag == 1) {
         glColor3f(red, green, blue);
         glPushMatrix();
-        glTranslated(xPos2d(specX), yPos2d(specY), 0.025);
+        glTranslated(xPosicion(specX), yPosicion(specY), 0.025);
+        glRotated(appleAngle, 0.3, 1.0, 0.0);
         glutSolidSphere(radio, 10, 10);
         glPopMatrix();
     }
     glColor3f(0.5, 0.2, 0.7);
     glPushMatrix();
-    glTranslated(xPos2d(appleX), yPos2d(appleY), 0.025);
+    glTranslated(xPosicion(appleX), yPosicion(appleY), 0.025);
     glRotated(appleAngle, 0.3, 1.0, 0.0);
     glutSolidSphere(0.04, 10, 10);
     glPopMatrix();
 }
 
-static void crearobstaculos (void) {
+static void crearObstaculos(void) {
 
     if (aux1 == 0){
         aux1 = 1;
@@ -439,8 +441,8 @@ static void crearobstaculos (void) {
         i = 3*nivel;
         printf("(obs: %d)",i);
         for(j=0;j<i +1;j++) {
-            n[j].f = rand() % unitsPerRow + 1;
-            n[j].c = rand() % unitsPerCol + 1;
+            n[j].f = rand() % unidadesPorFila + 1;
+            n[j].c = rand() % unidadesPorCol + 1;
             n[j].s = rand() % 2;
             n[j].l = rand() % 5 + 1;
             printf("(%d,%d,%d,%d)\n", n[j].f, n[j].c, n[j].s, n[j].l);
@@ -449,13 +451,13 @@ static void crearobstaculos (void) {
 
 }
 
+// Dibuja marcadores en el juego, los ue aparecen debajo
 void marcadores(){
-    // Dibuja el Marcador
-    glColor3f(1.0, 1.0, 1.0);
-
-    std::stringstream ss; // Helper para desplegar el marcador
-    std::stringstream sp;
-    std::stringstream lvl;
+    glColor3f(0.502, 0.000, 0.000);
+    // Helper para desplegar los marcadores
+    std::stringstream ss; //score
+    std::stringstream sp; //speed
+    std::stringstream lvl; //nivel
     lvl << "Nivel: " << std::to_string(nivel);
     draw3dString(GLUT_STROKE_MONO_ROMAN, lvl.str().c_str(), 0.0, -0.7, 0.0);
     sp << "Speed: " << std::to_string(speed);
@@ -485,12 +487,12 @@ static void drawPerspective(void) {
 
     glBegin(GL_LINES);
 
-    for (double i = 0; i <= unitsPerRow; i += 2) {
+    for (double i = 0; i <= unidadesPorFila; i += 2) {
         glColor3f(0, 0, 0);
-        glVertex2d(minX, xPos2d(i));
-        glVertex2f(maxX, xPos2d(i));
-        glVertex2d(xPos2d(i), minY);
-        glVertex2f(xPos2d(i), maxY);
+        glVertex2d(minX, xPosicion(i));
+        glVertex2f(maxX, xPosicion(i));
+        glVertex2d(xPosicion(i), minY);
+        glVertex2f(xPosicion(i), maxY);
     }
 
     glEnd();
@@ -505,10 +507,8 @@ static void drawPerspective(void) {
     glutSolidCube(0.05);
     glPopMatrix();
 
-
-    //obstaculos aleatorios una funcion aparte? o solo el rand
-
-    crearobstaculos();
+    // Crea los obstaculos
+    crearObstaculos();
 
     //tengo que poner un if para ver si sale del campo los obstaculos cuando son muy largos
     for(j=0;j<i+1 ;j++) { //posiciones de los obstaculos en el vector de atributos
@@ -516,9 +516,9 @@ static void drawPerspective(void) {
         if(n[j].l < 7 && (n[j].s == 0 || n[j].s == 1)){
         for(k=0;k <= n[j].l ;k++) {//largo del obstaculo
             if( n[j].s == 1 ){ //crece en y
-                if( (n[j].c +k) <= unitsPerCol){
+                if( (n[j].c +k) <= unidadesPorCol){
                     glPushMatrix();
-                    glTranslated(xPos2d(n[j].f), yPos2d(n[j].c +k), 0.025); //translada con parametros -1 a 1
+                    glTranslated(xPosicion(n[j].f), yPosicion(n[j].c + k), 0.025); //translada con parametros -1 a 1
                     glScaled(1.0, 1.0, 1.0); //x 1 a 42 e y de 1 a 42 escala que tan largo sera en x o y
                     glutSolidCube(0.05);
                     glPopMatrix();
@@ -526,9 +526,9 @@ static void drawPerspective(void) {
                 }
             }
             if( n[j].s == 0 ){
-                if( (n[j].f +k) <= unitsPerRow){
+                if( (n[j].f +k) <= unidadesPorFila){
                     glPushMatrix();
-                    glTranslated(xPos2d(n[j].f +k), yPos2d(n[j].c), 0.025); //translada con parametros -1 a 1
+                    glTranslated(xPosicion(n[j].f + k), yPosicion(n[j].c), 0.025); //translada con parametros -1 a 1
                     glScaled(1.0, 1.0, 1.0); //x 1 a 42 e y de 1 a 42 escala que tan largo sera en x o y
                     glutSolidCube(0.05);
                     glPopMatrix();
@@ -563,30 +563,24 @@ static void drawPerspective(void) {
     glEnable(GL_TEXTURE_2D);
 
     // Dibuja la Manzana
-    glBindTexture(GL_TEXTURE_2D, texName[1]);
-    glEnable(GL_TEXTURE_GEN_S);
-    glEnable(GL_TEXTURE_GEN_T);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
     drawApple();
 
     // Dibuja la Serpiente
-    glColor3f(1.0, 1.0, 1.0);
-
     glBindTexture(GL_TEXTURE_2D, texName[0]);
-
+    glEnable(GL_TEXTURE_GEN_S);
+    glEnable(GL_TEXTURE_GEN_T);
+    glColor3f(1.0, 1.0, 1.0);
+    // Dibuja la cola
     for (int i = player->length - 1; i >= 0; i--) {
         glPushMatrix();
-        glTranslated(xPos2d(player->xAt(i)), yPos2d(player->yAt(i)), 0.025);
+        glTranslated(xPosicion(player->xAt(i)), yPosicion(player->yAt(i)), 0.025);
         glutSolidSphere(0.03, 10, 10);
-
         glPopMatrix();
     }
 
     glDisable(GL_TEXTURE_GEN_S);
     glDisable(GL_TEXTURE_GEN_T);
     glDisable(GL_TEXTURE_2D);
-
     marcadores();
 
 }
@@ -615,7 +609,7 @@ static void display(void) {
 
     } else {
 
-        snakeY = yPos2d(player->y());
+        snakeY = yPosicion(player->y());
 
         snakeY = snakeY <= -0.5 ? -0.5 : snakeY;
         snakeY = snakeY >= 1.5 ? 1.5 : snakeY;
@@ -721,13 +715,13 @@ void resetGame() {
     speed = 1;
     nivel = 1;
     appleFlag = 0;
-    appleX = rand() % (unitsPerRow - 1) + 2;
-    appleY = rand() % (unitsPerCol - 1) + 2;
+    appleX = rand() % (unidadesPorFila - 1) + 2;
+    appleY = rand() % (unidadesPorCol - 1) + 2;
     score = 0;
     mScore = 0;
     aux1 = 0;
     snakessj(0);
-    crearobstaculos();
+    crearObstaculos();
 }
 
 void myTimer(int valor) {
@@ -749,7 +743,7 @@ void myTimer(int valor) {
     }
 
     if (showSplashScreen) {
-        glutTimerFunc((unsigned int) (timerTick / speed), myTimer, 1);
+        glutTimerFunc((unsigned int) (milisegundos / speed), myTimer, 1);
         return;
     }
 
@@ -762,7 +756,7 @@ void myTimer(int valor) {
                 if (player->x() == n[z].f && player->y() == (n[z].c + k1)) { //choca con un obstaculo
                     printf("(%d,%d)c\n", player->x(), player->y());
                     showSplashScreen = true;
-                    scoreprint = score;
+                    scorePrint = score;
                     aux3 = 5;
                   //  resetGame();
                 }
@@ -771,7 +765,7 @@ void myTimer(int valor) {
                 if (player->x() == (n[z].f + k1) && player->y() == n[z].c) { //choca con un obstaculo
                     printf("(%d,%d)f\n", player->x(), player->y());
                     showSplashScreen = true;
-                    scoreprint = score;
+                    scorePrint = score;
                     aux3 = 5;
                   //  resetGame();
                 }
@@ -782,32 +776,32 @@ void myTimer(int valor) {
 
     // Revisa si la Serpiente colisiona con el marco
     // y cambia la dirección cuando sea necesario
-    if ((dirX == 1 && player->x() >= unitsPerRow) || (dirX == -1 && player->x() <= 0) ||
-            (dirY == 1 && player->y() >= unitsPerCol) ||
+    if ((dirX == 1 && player->x() >= unidadesPorFila) || (dirX == -1 && player->x() <= 0) ||
+            (dirY == 1 && player->y() >= unidadesPorCol) ||
             (dirY == -1 && player->y() <= 0)) {
         showSplashScreen = true;
-        scoreprint = score;
+        scorePrint = score;
         aux3 = 5;
         //resetGame();
     }
-    if (dirX == 1 && player->x() >= unitsPerRow) {
+    if (dirX == 1 && player->x() >= unidadesPorFila) {
         showSplashScreen = true;
-        scoreprint = score;
+        scorePrint = score;
         aux3 = 5;
        // resetGame();
     } else if (dirX == -1 && player->x() <= 0) {
         showSplashScreen = true;
-        scoreprint = score;
+        scorePrint = score;
         aux3 = 5;
        // resetGame();
-    } else if (dirY == 1 && player->y() >= unitsPerCol) {
+    } else if (dirY == 1 && player->y() >= unidadesPorCol) {
         showSplashScreen = true;
-        scoreprint = score;
+        scorePrint = score;
         aux3 = 5;
        // resetGame();
     } else if (dirY == -1 && player->y() <= 0) {
         showSplashScreen = true;
-        scoreprint = score;
+        scorePrint = score;
         aux3 = 5;
         //resetGame();
     }
@@ -818,8 +812,8 @@ void myTimer(int valor) {
     if (crece == 1 || snakeHits(appleX, appleY) || snakeHits(specX, specY)) {
         // Incrementa el score si choca con una manzana normal
         if (snakeHits(appleX, appleY)) {
-            appleX = rand() % (unitsPerRow - 1) + 1;
-            appleY = rand() % (unitsPerCol - 1) + 1;
+            appleX = rand() % (unidadesPorFila - 1) + 1;
+            appleY = rand() % (unidadesPorCol - 1) + 1;
             score += 1;
         }
 
@@ -834,8 +828,8 @@ void myTimer(int valor) {
         // Si choca contra una especial
         if (snakeHits(specX, specY)) {
             appleFlag = 0;
-            specX = rand() % (unitsPerRow - 1) + 3;
-            specY = rand() % (unitsPerCol - 1) + 3;
+            specX = rand() % (unidadesPorFila - 1) + 3;
+            specY = rand() % (unidadesPorCol - 1) + 3;
             scoreMultiplier = 0;
             if (specialApple == 1) {
                 scoreMultiplier = 25;
@@ -880,7 +874,7 @@ void myTimer(int valor) {
     mScore = score%200;
 
     glutPostRedisplay();
-    glutTimerFunc(timerTick / speed, myTimer, 1);
+    glutTimerFunc(milisegundos / speed, myTimer, 1);
 }
 
 void myKeyboard(int key, int x, int y) {
@@ -995,7 +989,9 @@ void myKey(unsigned char key, int x, int y) {
 
             // Salir
         case 27:
-            exit(-1);
+//            exit(-1);
+            aux3 = 5;
+            showSplashScreen = true;
         case 'n'://hay que cambiar por las flechas
             printf("asd1\n");
             if (aux2 > 0){
@@ -1028,7 +1024,7 @@ int main(int argc, char *argv[]) {
     glutInit(&argc, argv);
 
     // Tamaño de ventana
-    glutInitWindowSize(width, height);
+    glutInitWindowSize(ancho, alto);
 
     // Posición de ventana
     glutInitWindowPosition(120, 120);
@@ -1041,7 +1037,7 @@ int main(int argc, char *argv[]) {
 
     init();
 
-    glClearColor(0.294f, 0.000f, 0.510f, 0.9f);
+    glClearColor(0.663, 0.663, 0.663, 0.9f);
 
    // glutDisplayFunc(display);
     glutReshapeFunc(reshape);
