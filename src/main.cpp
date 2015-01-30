@@ -151,7 +151,7 @@ static void init() {
     glGenTextures(2, texName);
     Image *image;
 
-    image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
+    image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/pielNormal.bmp");
     loadTexture(image, 0);
 
     delete image;
@@ -689,9 +689,9 @@ int specialAppleValue() {
 void snakessj(int val) {
     Image *image;
     if (val == 1) { //1 -> SI
-        image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/apple.bmp");
+        image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/pielRoja.bmp");
     } else if(val == 0) {
-        image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
+        image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/pielNormal.bmp");
     }
     loadTexture(image, 0);
     delete image;
