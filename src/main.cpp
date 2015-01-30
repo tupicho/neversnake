@@ -151,7 +151,7 @@ static void init() {
     glGenTextures(2, texName);
     Image *image;
 
-    image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/pielNormal.bmp");
+    image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/pielNormal.bmp");
     loadTexture(image, 0);
 
     delete image;
@@ -248,7 +248,7 @@ void instrucciones() {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glColor3f(0.0, 1.0, 0.0);
+    glColor3f(0.0, 0.0, 0.0);
     glLineWidth(1);
 
     std::stringstream ss; // Helper para desplegar el marcador
@@ -689,9 +689,9 @@ int specialAppleValue() {
 void snakessj(int val) {
     Image *image;
     if (val == 1) { //1 -> SI
-        image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/pielRoja.bmp");
+        image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/pielRoja.bmp");
     } else if(val == 0) {
-        image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/pielNormal.bmp");
+        image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/pielNormal.bmp");
     }
     loadTexture(image, 0);
     delete image;
