@@ -5,12 +5,14 @@
 #include <GL/glut.h>
 
 #endif
+//#include <stdlib.h>
+#include <stdio.h>
 
 #include <iostream>
 #include <sstream>
 #include <string.h>
 #include <math.h>
-
+//#include "../cabeceras/rank.h"
 #include "../cabeceras/image.h"
 #include "../cabeceras/snake.h"
 
@@ -65,7 +67,7 @@ int traspasarParedes = 1;
  ******************************/
 
 // Marcador
-int score = 0;
+int score = 0, scoreprint = 0;
 int scoreMultiplier = 1;
 
 // Timer
@@ -152,6 +154,8 @@ int mScore = 100;
 ********************************************************************************
 ********************************************************************************/
 
+
+/********************************************************************************/
 void loadTexture(Image *image, int k) {
     glBindTexture(GL_TEXTURE_2D, texName[k]); // Tell OpenGL which texture to edit
 
@@ -280,7 +284,7 @@ static void init() {
     Image *image;
 
     //image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
-    image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
+    image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/snake.bmp");
     loadTexture(image, 0);
 
 //    image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/apple.bmp");
@@ -356,6 +360,41 @@ void draw3dString(void *font, const char *s, float x, float y, float z) {
 }
 
 
+void scoreF(){
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_LIGHT0);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glColor3f(0.0, 1.0, 0.0);
+    glLineWidth(1);
+
+//    std::stringstream ss; // Helper para desplegar el marcador
+    //tablarank();
+    glPushMatrix();
+
+    glColor3f(0.0, 1.0, 0.0);
+    glLineWidth(1);
+
+    std::stringstream ss; // Helper para desplegar el marcador
+
+    glPushMatrix();
+
+    ss << "Fin del juego :(";
+    drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 1.08);
+    ss.str("");
+    ss.clear();
+
+    ss << "Score: " << std::to_string(scoreprint);
+    draw3dString(GLUT_STROKE_MONO_ROMAN, ss.str().c_str(), 0.5, -0.85, 0.0);
+
+    glPopMatrix();
+
+    aux3 = 8;
+
+}
+
 void instrucciones() {
 //se apaga para que se vea mas iluminado cuando pierde
     glDisable(GL_DEPTH_TEST);
@@ -376,22 +415,72 @@ void instrucciones() {
     ss.str("");
     ss.clear();
 
-    ss <<   "En el plano del juego se encuentran alimentos, paredes y obstáculos, estos últimos deben\n"
-            "ser evitados, mediante la maniobra adecuada. Los obstáculos y paredes tiene que tener\n"
-            "textura sólidas (no transparentes)\n"
-            "Los tipos de alimentos son:\n"
-            "\uF0B7 Esfera de color blanco dan 25 pts, tamaño mediano (Probabilidad 50%).\n"
-            "\uF0B7 Esfera de color azul, tamaño pequeño, reducen en un factor la velocidad\n"
-            "(Probabilidad 20%).\n"
-            "\uF0B7 Esfera de color rojo, tamaño mediano, permite por 10 segundos atropellar todo\n"
-            "tipo de obstáculos sin perder la vida (Probabilidad 15%) OBS.: solamente\n"
-            "obstáculos se puede atropellar, las paredes no.\n"
-            "\uF0B7 Esferas de color amarillo dan 10 pts, tamaño pequeño (Probabilidad 60%)\n"
-            "\uF0B7 Esferas de color verde dan 100 pts, tamaño grande, aparición (Probabilidad 10%)";
-    drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 1.08);
+    ss <<   "En el juego se encuentran alimentos, paredes y obstáculos, estos ultimos deben";
+    drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.90);
+    ss.str("");
+    ss.clear();
+    ss <<    "ser evitados, mediante la maniobra adecuada.";
+
+    drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.80);
     ss.str("");
     ss.clear();
 
+    ss << "Los movimientos se realizan con las teclas A, D y las flechas (Izq. y Der.)";
+    drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.70);
+    ss.str("");
+    ss.clear();
+
+    ss << "Los tipos de alimentos son:";
+    drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.60);
+    ss.str("");
+    ss.clear();
+
+    ss << "* Esfera de color blanco dan 25 pts, tamanho mediano (Probabilidad 50%).";
+    drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.50);
+    ss.str("");
+    ss.clear();
+
+    ss << "* Esfera de color azul, tamaño pequenho, reducen en un factor la velocidad";
+    drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.40);
+    ss.str("");
+    ss.clear();
+
+    ss << "(Probabilidad 20%).";
+    drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.30);
+    ss.str("");
+    ss.clear();
+
+    ss << "* Esfera de color rojo, tamanho mediano, permite por 10 segundos atropellar todo";
+    drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.20);
+    ss.str("");
+    ss.clear();
+
+    ss << "tipo de obstaculos sin perder la vida (Probabilidad 15%) OBS.: solamente";
+    drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.10);
+    ss.str("");
+    ss.clear();
+
+    ss << " los obstaculos se puede atropellar, las paredes no.";
+    drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, 0.0);
+    ss.str("");
+    ss.clear();
+
+    ss << "* Esferas de color amarillo dan 10 pts, tamanho pequenho (Probabilidad 60%)";
+    drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, -0.10);
+    ss.str("");
+    ss.clear();
+
+    ss << "* Esferas de color verde dan 100 pts, tamanho grande, aparicion (Probabilidad 10%)";
+    drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, -0.20);
+    ss.str("");
+    ss.clear();
+
+    ss << "Press M o N para [Salir]";
+    drawString(GLUT_BITMAP_8_BY_13, ss.str().c_str(), -1.5, -0.30);
+    ss.str("");
+    ss.clear();
+
+    glPopMatrix();
     aux3=9;
 }
 
@@ -686,6 +775,10 @@ static void display(void) {
         drawPerspective();
 
     }
+
+    if (aux3 == 5 ){
+        scoreF();
+    }
     if (aux3 == 2){
         instrucciones();
 
@@ -774,6 +867,7 @@ void resetGame() {
     player->reset();
     start = time(0);
     speed = 1;
+
     appleFlag = 0;
     appleX = rand() % (unitsPerRow - 1) + 2;
     appleY = rand() % (unitsPerCol - 1) + 2;
@@ -815,14 +909,18 @@ void myTimer(int valor) {
                 if (player->x() == n[z].f && player->y() == (n[z].c + k1)) { //choca con un obstaculo
                     printf("(%d,%d)c\n", player->x(), player->y());
                     showSplashScreen = true;
-                    resetGame();
+                    scoreprint = score;
+                    aux3 = 5;
+                  //  resetGame();
                 }
             }
             if (n[z].s == 0) {
                 if (player->x() == (n[z].f + k1) && player->y() == n[z].c) { //choca con un obstaculo
                     printf("(%d,%d)f\n", player->x(), player->y());
                     showSplashScreen = true;
-                    resetGame();
+                    scoreprint = score;
+                    aux3 = 5;
+                  //  resetGame();
                 }
             }
 
@@ -835,16 +933,30 @@ void myTimer(int valor) {
             (dirY == 1 && player->y() >= unitsPerCol) ||
             (dirY == -1 && player->y() <= 0)) {
         showSplashScreen = true;
-        resetGame();
+        scoreprint = score;
+        aux3 = 5;
+        //resetGame();
     }
     if (dirX == 1 && player->x() >= unitsPerRow) {
-        resetGame();
+        showSplashScreen = true;
+        scoreprint = score;
+        aux3 = 5;
+       // resetGame();
     } else if (dirX == -1 && player->x() <= 0) {
-        resetGame();
+        showSplashScreen = true;
+        scoreprint = score;
+        aux3 = 5;
+       // resetGame();
     } else if (dirY == 1 && player->y() >= unitsPerCol) {
-        resetGame();
+        showSplashScreen = true;
+        scoreprint = score;
+        aux3 = 5;
+       // resetGame();
     } else if (dirY == -1 && player->y() <= 0) {
-        resetGame();
+        showSplashScreen = true;
+        scoreprint = score;
+        aux3 = 5;
+        //resetGame();
     }
 
     appleAngle = (appleAngle >= 360) ? 0 : appleAngle + 5;
@@ -1011,11 +1123,19 @@ void myKey(unsigned char key, int x, int y) {
             if(aux2 == 0) {
                 showSplashScreen = false; //press enter
             }
-            if(aux2 == 2){
+            if(aux2 == 2){ // instrucciones
                 aux3 = 2;
             }
-            if(aux3 == 9){
-                display();
+            if (aux2 == 1){ //ranking
+                aux3 = 1;
+            }
+//            if(aux3 == 9){
+//               // display();
+//            }
+            if(aux3 == 8){ //del score
+                showSplashScreen = true;
+                resetGame();
+                aux3 = 9;
             }
 
             break;
@@ -1038,11 +1158,11 @@ void myKey(unsigned char key, int x, int y) {
             printf("asd\n");
             if (aux2 < 2){
                 aux2 = aux2 + 1;
-                display();//donde se crea la pantalla inicial
+               // display();//donde se crea la pantalla inicial
                 break;
             }else{
                 aux2 = 0;
-                display();
+              //  display();
                 break;
             }
     }
