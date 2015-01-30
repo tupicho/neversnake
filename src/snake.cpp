@@ -53,7 +53,7 @@ bool Snake::moveTo(int x, int y) {
   }
 
   nextX = tail[1][0] + x;
-  nextY = tail[1][1] + y;;
+  nextY = tail[1][1] + y;
 
   tail[0][0] = nextX;
   tail[0][1] = nextY;

@@ -1,18 +1,10 @@
-#ifdef __APPLE__
-#include <GLUT/glut.h>
-#else
-
 #include <GL/glut.h>
-
-#endif
-//#include <stdlib.h>
-#include <stdio.h>
 
 #include <iostream>
 #include <sstream>
 #include <string.h>
 #include <math.h>
-//#include "../cabeceras/rank.h"
+
 #include "../cabeceras/image.h"
 #include "../cabeceras/snake.h"
 
@@ -20,28 +12,26 @@ Snake *player;
 
 using namespace std;
 
-/*
-   Windows
-******************************/
-
-// Límites del viewport
+// Limites del viewport
 double minX = -1.0, maxX = 1.0;
 double minY = -1.0, maxY = 1.0;
 
+// El que declara el nivel
 int nivel = 1;
 
 // Ancho y alto de la ventana
 double width = 640;
 double height = 480;
 
-//struct para obstaculos
+// Struct para obstaculos
 struct atributos {
     int f = 0; //fila 48
     int c = 0; //colunma 64
     int s = 0; //select 2
     int l = 0; //largo 5
 };
-//n matriz que se usara para crear y mantener las coordenadas y atributos de los obstaculos
+
+// n matriz que se usara para crear y mantener las coordenadas y atributos de los obstaculos
 atributos n[9];
 int i = 0, j = 0, k = 0, aux1 = 0, z = 0, k1 = 0, aux2 = 0, aux3 = 0;
 /*
@@ -78,12 +68,6 @@ double speed = 1;
 int dirX = 1; // X=1 Derecha, X=-1 Izq.
 int dirY = 0; // Y=1 Arriba,  Y=-1 Abajo
 
-// Flag para desplegar el mapa
-bool showMap = false;
-
-// Flag para tipo de serpiente
-int snakeShape = 0;
-
 // Flag para manzana
 int appleFlag = 0;
 int specialApple = 0;
@@ -91,20 +75,12 @@ int specialApple = 0;
 // Guarda nombre de la textura
 static GLuint texName[36];
 
-// Menu
-typedef enum {
-    SPEED1, SPEED2, SPEED3,
-    PERSP1, PERSP2, SNAKE1, SNAKE2, SALIR
-} opcionesMenu;
-
 bool showSplashScreen = true;
 
-/*
- Manzana
- ******************************/
-
-// Posición
+// Posición de manzana
 int appleX, appleY;
+
+// Posicion de manzana especial
 int specX, specY;
 
 // Angulo de rotación
@@ -117,45 +93,8 @@ int appleAngle = 0;
 
 // Flag para el evento "crece"
 int crece = 0;
-int mScore = 100;
+int mScore = 0;
 
-/** -- Fin de las variables -- **/
-
-
-/********************************************************************************
-********************************************************************************
-**                                                                            **
-** Snake 3D                                                                   **
-**                                                                            **
-** Juego clásico de Snake, pero ahora con vista en 3D.                        **
-**                                                                            **
-** Controles:                                                                 **
-**   - Flechas: Movimiento                                                    **
-**   - P: cambiar de perspectiva (2D/3D)                                      **
-**   - M: mostrar/esconder minimapa (sólo aplica para perspectiva 3D)         **
-**                                                                            **
-** El tablero mide 64x48 unidades, la serpiente se mueve una unidad           **
-** por cada *tick* del timer. Se usa esta posición para mostrar la serpiente  **
-** tanto en 2D como en 3D.                                                    **
-**                                                                            **
-** Hay dos vistas del juego:                                                  **
-**   1. 2D (clásica)                                                          **
-**   2. 3D (con minimapa)                                                     **
-**                                                                            **
-** Las coordenadas (x, y) de la ventana están en el rango                     **
-** de -1.0 a 1.0, respectivamente.                                            **
-**                                                                            **
-** 2D: Se divide el total de unidades horizontales entre el rango del ancho,  **
-** y las verticales entre el rango del alto, para obtener las coordenadas.    **
-**                                                                            **
-** 3D: Se utilizan las mismas coordenadas de la serpiente,                    **
-** pero se dibuja una serie de cubos que la componen.                         **
-**                                                                            **
-********************************************************************************
-********************************************************************************/
-
-
-/********************************************************************************/
 void loadTexture(Image *image, int k) {
     glBindTexture(GL_TEXTURE_2D, texName[k]); // Tell OpenGL which texture to edit
 
@@ -183,78 +122,6 @@ void loadTexture(Image *image, int k) {
 // Reads a bitmap image from a file
 Image *loadBMP(const char *filename);
 
-void onMenu(int opcion) {
-    switch (opcion) {
-
-        // Casos Velocidad
-        case SPEED1:
-            speed = 1.0;
-            break;
-        case SPEED2:
-            speed = 2.0;
-            break;
-        case SPEED3:
-            speed = 3.0;
-            break;
-
-            // Casos Perspectiva
-        case PERSP1:
-            showMap = false;
-            break;
-        case PERSP2:
-            showMap = true;
-            break;
-
-            // Casos Forma Serpiente
-        case SNAKE1:
-            snakeShape = 0;
-            break;
-        case SNAKE2:
-            snakeShape = 1;
-            break;
-
-            // Salir
-        case SALIR:
-            exit(0);
-            break;
-    }
-    glutPostRedisplay();
-}
-
-void initMenu(void) {
-    int menuVelocidad, menuPerspectiva, menuSerpiente, menuPrincipal;
-
-    menuVelocidad = glutCreateMenu(onMenu);
-    glutAddMenuEntry("Principiante", SPEED1);
-    glutAddMenuEntry("Intermedio", SPEED2);
-    glutAddMenuEntry("Avanzado", SPEED3);
-
-    menuPerspectiva = glutCreateMenu(onMenu);
-    glutAddMenuEntry("3D", PERSP1);
-    //glutAddMenuEntry("2D", PERSP2);
-
-    menuSerpiente = glutCreateMenu(onMenu);
-    glutAddMenuEntry("Esférica", SNAKE1);
-    glutAddMenuEntry("Cubica", SNAKE2);
-
-    glutCreateMenu(onMenu);
-    glutAddSubMenu("Nivel", menuVelocidad);
-    glutAddSubMenu("Perspectiva (3D)", menuPerspectiva);
-    glutAddSubMenu("Serpiente", menuSerpiente);
-
-    glutAddMenuEntry("Salir", SALIR);
-
-    glutAttachMenu(GLUT_RIGHT_BUTTON);
-}
-
-
-/*
- * public: init()
- *
- * Inicialización de:
- *  - Modos de openGL
- *  - Estado del juego
- */
 static void init() {
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -263,50 +130,37 @@ static void init() {
     glEnable(GL_COLOR_MATERIAL);
     glShadeModel(GL_FLAT);
 
-    player = new Snake(unitsPerRow / 2, // initial position in X
-            unitsPerCol / 2, // initial position in y
-            100);            // maximum length of tail
+    /**
+    * Posiciones iniciales
+    * x -> unitsPerRow/2
+    * y -> unitsPerCol/2
+    * max length es el 100
+    */
+    player = new Snake(unitsPerRow / 2, unitsPerCol / 2, 100);
 
     // Random seed
     srand((unsigned int) time(NULL));
 
     // Genera la Manzana por primera vez
     appleX = rand() % (unitsPerRow - 1) + 3;
+    appleY = rand() % (unitsPerCol - 1) + 3;
     specX = rand() % (unitsPerRow - 1) + 3;
     specY = rand() % (unitsPerCol - 1) + 3;
-    appleY = rand() % (unitsPerCol - 1) + 3;
-
-    // Crea menu
-    initMenu();
 
     // Texturas
     glGenTextures(2, texName);
     Image *image;
 
-    //image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
-    image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/snake.bmp");
+    image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
     loadTexture(image, 0);
-
-//    image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/apple.bmp");
-//    loadTexture(image, 1);
 
     delete image;
 }
 
 
 /*
- *
- * public: xPos2d(double x)
- *
  * x - posición en x del tablero
  * Regresa la posición x para desplegarse en 2D
- *
- *  Ejemplos:
- *
- *    - cuando x = 64, regresa 1.0
- *    - cuando x = 0, regresa -1.0
- *    - cuando x = 32, regresa 0.0
- *
  */
 double xPos2d(int x) {
     double wide = maxX - minX;
@@ -316,18 +170,8 @@ double xPos2d(int x) {
 }
 
 /*
- *
- * public: yPos2d(double x)
- *
  * y - posición en y del tablero
  * Regresa la posición y para desplegarse en 2D
- *
- *  Ejemplos:
- *
- *    - cuando y = 48, regresa 1.0
- *    - cuando y = 0, regresa -1.0
- *    - cuando y = 24, regresa 0.0
- *
  */
 double yPos2d(int y) {
     double tall = maxY - minY;
@@ -605,6 +449,21 @@ static void crearobstaculos (void) {
 
 }
 
+void marcadores(){
+    // Dibuja el Marcador
+    glColor3f(1.0, 1.0, 1.0);
+
+    std::stringstream ss; // Helper para desplegar el marcador
+    std::stringstream sp;
+    std::stringstream lvl;
+    lvl << "Nivel: " << std::to_string(nivel);
+    draw3dString(GLUT_STROKE_MONO_ROMAN, lvl.str().c_str(), 0.0, -0.7, 0.0);
+    sp << "Speed: " << std::to_string(speed);
+    draw3dString(GLUT_STROKE_MONO_ROMAN, sp.str().c_str(), -0.93, -0.85, 0.0);
+    ss << "Score: " << std::to_string(score);
+    draw3dString(GLUT_STROKE_MONO_ROMAN, ss.str().c_str(), 0.5, -0.85, 0.0);
+}
+
 static void drawPerspective(void) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
@@ -621,12 +480,13 @@ static void drawPerspective(void) {
     glLightfv(GL_LIGHT0, GL_POSITION, directedLightPos);
 
     // Dibuja la Cuadrícula
-    glColor3f(0.2, 0.0, 0.2);
+    glColor3f(0,0,0);
     glLineWidth(1);
 
     glBegin(GL_LINES);
 
     for (double i = 0; i <= unitsPerRow; i += 2) {
+        glColor3f(0, 0, 0);
         glVertex2d(minX, xPos2d(i));
         glVertex2f(maxX, xPos2d(i));
         glVertex2d(xPos2d(i), minY);
@@ -636,10 +496,10 @@ static void drawPerspective(void) {
     glEnd();
 
     // Dibuja el Marco
-    glColor3f(1, 1, 1);
     //derecha
 
     glPushMatrix();
+    glColor3f(1, 1, 1);
     glTranslated(maxX + 0.05, 0.0, 0.0);
     glScaled(1.0, 1.0 * 41, 1.0);
     glutSolidCube(0.05);
@@ -650,7 +510,7 @@ static void drawPerspective(void) {
 
     crearobstaculos();
 
-//tengo que poner un if para ver si sale del campo los obstaculos cuando son muy largos
+    //tengo que poner un if para ver si sale del campo los obstaculos cuando son muy largos
     for(j=0;j<i+1 ;j++) { //posiciones de los obstaculos en el vector de atributos
         printf("(%d,%d,%d,%d)p%d\n", n[j].f, n[j].c, n[j].s, n[j].l,j);
         if(n[j].l < 7 && (n[j].s == 0 || n[j].s == 1)){
@@ -658,7 +518,7 @@ static void drawPerspective(void) {
             if( n[j].s == 1 ){ //crece en y
                 if( (n[j].c +k) <= unitsPerCol){
                     glPushMatrix();
-                    glTranslated(xPos2d(n[j].f), yPos2d(n[j].c +k), 0.0); //translada con parametros -1 a 1
+                    glTranslated(xPos2d(n[j].f), yPos2d(n[j].c +k), 0.025); //translada con parametros -1 a 1
                     glScaled(1.0, 1.0, 1.0); //x 1 a 42 e y de 1 a 42 escala que tan largo sera en x o y
                     glutSolidCube(0.05);
                     glPopMatrix();
@@ -668,7 +528,7 @@ static void drawPerspective(void) {
             if( n[j].s == 0 ){
                 if( (n[j].f +k) <= unitsPerRow){
                     glPushMatrix();
-                    glTranslated(xPos2d(n[j].f +k), yPos2d(n[j].c), 0.0); //translada con parametros -1 a 1
+                    glTranslated(xPos2d(n[j].f +k), yPos2d(n[j].c), 0.025); //translada con parametros -1 a 1
                     glScaled(1.0, 1.0, 1.0); //x 1 a 42 e y de 1 a 42 escala que tan largo sera en x o y
                     glutSolidCube(0.05);
                     glPopMatrix();
@@ -710,7 +570,7 @@ static void drawPerspective(void) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
     drawApple();
 
-    // Dibuja la Serpientedr
+    // Dibuja la Serpiente
     glColor3f(1.0, 1.0, 1.0);
 
     glBindTexture(GL_TEXTURE_2D, texName[0]);
@@ -727,15 +587,8 @@ static void drawPerspective(void) {
     glDisable(GL_TEXTURE_GEN_T);
     glDisable(GL_TEXTURE_2D);
 
-    // Dibuja el Marcador
-    glColor3f(1.0, 1.0, 1.0);
+    marcadores();
 
-    std::stringstream ss; // Helper para desplegar el marcador
-    std::stringstream sp;
-    sp << "Speed: " << std::to_string(speed);
-    draw3dString(GLUT_STROKE_MONO_ROMAN, sp.str().c_str(), -0.93, -0.85, 0.0);
-    ss << "Score: " << std::to_string(score);
-    draw3dString(GLUT_STROKE_MONO_ROMAN, ss.str().c_str(), 0.5, -0.85, 0.0);
 }
 
 void reshape(int w, int h) {
@@ -746,7 +599,7 @@ void reshape(int w, int h) {
 }
 
 static void display(void) {
-    double snakeX, snakeY;
+    double snakeY;
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
@@ -762,7 +615,6 @@ static void display(void) {
 
     } else {
 
-        snakeX = xPos2d(player->x());
         snakeY = yPos2d(player->y());
 
         snakeY = snakeY <= -0.5 ? -0.5 : snakeY;
@@ -842,10 +694,10 @@ int specialAppleValue() {
 
 void snakessj(int val) {
     Image *image;
-    if(val){ //1 -> SI
-        image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/apple.bmp");
-    }else{
-        image = loadBMP("/home/hector/ClionProjects/neversnake/texturas/snake.bmp");
+    if (val == 1) { //1 -> SI
+        image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/apple.bmp");
+    } else if(val == 0) {
+        image = loadBMP("/home/luifer99/ClionProjects/neversnake/texturas/snake.bmp");
     }
     loadTexture(image, 0);
     delete image;
@@ -867,11 +719,12 @@ void resetGame() {
     player->reset();
     start = time(0);
     speed = 1;
-
+    nivel = 1;
     appleFlag = 0;
     appleX = rand() % (unitsPerRow - 1) + 2;
     appleY = rand() % (unitsPerCol - 1) + 2;
     score = 0;
+    mScore = 0;
     aux1 = 0;
     snakessj(0);
     crearobstaculos();
@@ -1171,13 +1024,24 @@ void myKey(unsigned char key, int x, int y) {
 }
 
 int main(int argc, char *argv[]) {
+
     glutInit(&argc, argv);
+
+    // Tamaño de ventana
     glutInitWindowSize(width, height);
+
+    // Posición de ventana
     glutInitWindowPosition(120, 120);
+
+    // Modo de display
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+
+    // Crea ventana con titulo
     glutCreateWindow("Snake 3D - Amarilla/Villalba");
 
     init();
+
+    glClearColor(0.294f, 0.000f, 0.510f, 0.9f);
 
    // glutDisplayFunc(display);
     glutReshapeFunc(reshape);
